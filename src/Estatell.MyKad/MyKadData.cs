@@ -8,6 +8,7 @@ namespace Estatell.MyKad;
 /// <param name="Gender"><c>male</c> or <c>female</c>.</param>
 /// <param name="AddressLine2">Address lines 2 and 3, joined with <c>, </c>.</param>
 /// <param name="State">The state name in title case.</param>
+/// <param name="StateCode">The LHDN state code, for example <c>12</c> for Sabah, or empty when nothing matches.</param>
 /// <param name="PostalCode">Five digits, or empty.</param>
 /// <param name="PhotoBase64">A <c>data:image/jpeg;base64,…</c> string, or null when there is no JPEG portrait.</param>
 public sealed record MyKadData(
@@ -21,6 +22,7 @@ public sealed record MyKadData(
     string AddressLine2,
     string City,
     string State,
+    string StateCode,
     string PostalCode,
     string CountryCode,
     string? PhotoBase64);

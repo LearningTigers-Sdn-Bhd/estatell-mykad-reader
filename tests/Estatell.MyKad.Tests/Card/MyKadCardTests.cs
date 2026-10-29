@@ -25,6 +25,7 @@ public class MyKadCardTests
                 AddressLine2: "TAMAN UJIAN, BATU 5",
                 City: "Kota Kinabalu",
                 State: "Sabah",
+                StateCode: "12",
                 PostalCode: "88300",
                 CountryCode: "MY",
                 PhotoBase64: "data:image/jpeg;base64," + Convert.ToBase64String(CardFixture.FakeJpeg())),
@@ -76,6 +77,14 @@ public class MyKadCardTests
         var data = MyKadCard.Read(new CardFixture { Address3 = "" }.Reader(), Token);
 
         Assert.Equal("TAMAN UJIAN", data.AddressLine2);
+    }
+
+    [Fact]
+    public void AnUnknownStateUsesThePostcode()
+    {
+        var data = MyKadCard.Read(new CardFixture { State = "NEGERI X", Postcode = [0x50, 0x48, 0x00] }.Reader(), Token);
+
+        Assert.Equal(("Negeri X", "14", "50480"), (data.State, data.StateCode, data.PostalCode));
     }
 
     [Fact]

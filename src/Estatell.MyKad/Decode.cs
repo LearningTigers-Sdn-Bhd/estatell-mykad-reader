@@ -13,6 +13,8 @@ internal static class Decode
     public static MyKadData Data(ReadOnlySpan<byte> identity, ReadOnlySpan<byte> address, ReadOnlySpan<byte> portrait)
     {
         var ic = Text(identity, 0x111, 13);
+        var state = Text(address, 0x79, 30);
+        var postcode = Postcode(address.Slice(0x5D, 3));
 
         return new MyKadData(
             Name: Text(identity, 0x03, 150),
@@ -24,8 +26,9 @@ internal static class Decode
             AddressLine1: Text(address, 0x03, 30),
             AddressLine2: JoinLines(Text(address, 0x21, 30), Text(address, 0x3F, 30)),
             City: TitleCase(Text(address, 0x60, 25)),
-            State: TitleCase(Text(address, 0x79, 30)),
-            PostalCode: Postcode(address.Slice(0x5D, 3)),
+            State: TitleCase(state),
+            StateCode: States.Code(state, postcode),
+            PostalCode: postcode,
             CountryCode: "MY",
             PhotoBase64: Photo(portrait));
     }
