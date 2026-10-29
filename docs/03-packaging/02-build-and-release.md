@@ -17,7 +17,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 
 ## Smoke tests
 
-Each runner starts the built app and checks:
+Each runner starts the built app with `--no-tray` and checks:
 
 - `GET /status` returns `version` equal to the tag.
 - A foreign `Origin` gets `403`.

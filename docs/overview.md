@@ -6,6 +6,8 @@ MyKad Reader is a small native app for the front-desk computer. It reads the chi
 
 A web page cannot talk to a USB card reader. MyKad Reader does it and answers Estatell over HTTP on `127.0.0.1:9292`. Developer docs call it **the bridge**. Screens and user docs call it **MyKad Reader**.
 
+MyKad Reader shows an icon in the Windows tray and the macOS menu bar. Its menu shows the status, the hotel it is connected to and, while not connected, the connect code. It has no window. See [Tray](02-bridge/04-tray.md).
+
 ## Background
 
 Estatell has a Python bridge today: `estatell/tools/mykad-bridge/mykad_bridge.py` (version 1.1.0), bundled with PyInstaller. It works, but:
@@ -25,7 +27,8 @@ MyKad Reader 2.0.0 replaces it. The Python bridge is removed after 2.0.0 ships.
 | Language      | .NET 10 LTS, C#, Native AOT. One native file, no runtime to install                                   |
 | Platforms     | Windows 10 and 11 (x64, arm64), macOS 15 or later (Apple Silicon and Intel)                           |
 | Older PCs     | Windows 7 and 8 are not supported. Hotels upgrade their devices                                       |
-| Connecting    | Each computer connects to one hotel. Reading a card needs that connection from 2.0.0                  |
+| Connecting    | Each computer connects to one hotel with the code shown in the tray. Reading a card needs that connection from 2.0.0 |
+| Tray          | Native on each OS: Win32 `Shell_NotifyIcon` on Windows, `NSStatusItem` on macOS. Icon and menu only, no window, no Quit |
 | Setup         | An admin does it in **Settings → MyKad Reader** in Estatell. Check-in shows a status only            |
 | Install help  | In the Estatell user docs. The app links to it                                                        |
 | Downloads     | GitHub Releases                                                                                       |
@@ -48,7 +51,7 @@ The Estatell server validates and stores everything. MyKad Reader never calls th
 | Module                                 | Doc                                                                                                                                                  |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 01 Card                                | [Reading a MyKad](01-card/01-reading-mykad.md), [PC/SC access](01-card/02-pcsc.md)                                                                   |
-| 02 Bridge                              | [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md), [Connecting](02-bridge/03-connecting.md)                                 |
+| 02 Bridge                              | [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md), [Connecting](02-bridge/03-connecting.md), [Tray](02-bridge/04-tray.md)    |
 | 03 Packaging                           | [Installers](03-packaging/01-installers.md), [Build and release](03-packaging/02-build-and-release.md)                                                |
 | 04 Estatell                            | [Settings page](04-estatell/01-settings-page.md), [App changes](04-estatell/02-app-changes.md), [User docs](04-estatell/03-user-docs.md)              |
 | 05 Development                         | [Setup and testing](05-development/01-setup-and-testing.md)                                                                                          |
@@ -60,5 +63,5 @@ The build plan is in [checklist.md](checklist.md).
 - Linux.
 - Code signing (later, when there is a budget).
 - Reading passports or other ID cards.
-- A screen or tray icon on the front-desk computer.
+- A window on the front-desk computer. The tray menu is the only screen MyKad Reader has.
 - MyKad Reader calling the Estatell server.

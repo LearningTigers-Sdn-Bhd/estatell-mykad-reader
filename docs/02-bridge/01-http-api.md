@@ -72,13 +72,17 @@ Failure:
 
 ## `POST /pair`
 
-Body: `{ "secret": "…", "property_name": "Hotel Seri Kota" }`.
+Body: `{ "secret": "…", "code": "482917", "property_name": "Hotel Seri Kota" }`.
+
+`code` is the connect code from the [tray menu](04-tray.md#connect-code), digits only.
 
 | HTTP | `code`              | When                                |
 | ---- | ------------------- | ----------------------------------- |
 | 200  | —                   | Connected                           |
 | 409  | `already_connected` | Disconnect first                    |
 | 422  | `invalid`           | Secret missing or shorter than 32 bytes |
+| 422  | `wrong_code`        | Connect code missing or wrong       |
+| 423  | `locked`            | 5 wrong codes. Select **New connect code** in the tray |
 
 ## `POST /unpair`
 
@@ -92,6 +96,7 @@ Needs the token. Clears the stored hash and property name. Returns `200`.
 | `--foreground`    | Run in a terminal window and print the log. For troubleshooting |
 | `--verbose`       | Log each request and each card step (never card data)          |
 | `--reset-pairing` | Clear the connection and exit                                  |
+| `--no-tray`       | Run without the tray icon. For tests and CI                    |
 | `--version`       | Print the version and exit                                     |
 
 ## Headers

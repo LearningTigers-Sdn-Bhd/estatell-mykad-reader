@@ -14,6 +14,7 @@ Every request runs these in order. The card is never touched before all pass.
 | 2 | Host    | A `Host` other than `127.0.0.1:9292` or `localhost:9292` (DNS rebinding) | 403 |
 | 3 | Origin  | An `Origin` not on the allowlist (other websites)             | 403    |
 | 4 | Token   | `/read` and `/unpair` without the right token                 | 401    |
+| 5 | Code    | `/pair` without the connect code from the tray                | 422    |
 
 ## Allowed origins
 
@@ -21,7 +22,11 @@ Every request runs these in order. The card is never touched before all pass.
 - For development: `http(s)://localhost`, `127.0.0.1` and any `*.test`, with any port.
 - `ESTATELL_BRIDGE_ORIGINS` adds more, comma separated.
 
-A request with no `Origin` passes check 3, as in 1.x (for example `curl` on the same computer). It still needs the token for `/read`.
+A request with no `Origin` passes check 3, as in 1.x (for example `curl` on the same computer). It still needs the token for `/read` and the connect code for `/pair`.
+
+## Connect code
+
+`/pair` takes no token, because the computer has none yet. Without a second check, any program on the computer could call `/pair` first with a secret it knows, and then read cards. The connect code closes that gap: only a person who sees the [tray menu](04-tray.md#connect-code) knows it. 5 wrong codes lock `/pair`, so the 6 digits cannot be guessed.
 
 ## Private Network Access
 
@@ -63,4 +68,5 @@ Chrome asks before an HTTPS page calls `127.0.0.1`. The preflight answer sends `
 ## Single instance
 
 - On Windows the socket uses `SO_EXCLUSIVEADDRUSE`, so two copies cannot share the port.
-- If the port is taken, the new copy exits with code 0. launchd does not restart a clean exit.
+- A second copy for the same user exits with code 0. launchd does not restart a clean exit.
+- A copy for another user keeps its tray and waits for the port. See [More than one user](04-tray.md#more-than-one-user).

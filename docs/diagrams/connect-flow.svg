@@ -67,9 +67,15 @@
   <text class="m s" x="760" y="142" text-anchor="end">{ device_id, connected: false }</text>
 
   <!-- Admin names the PC -->
-  <rect class="note" x="60" y="172" width="220" height="44" rx="8"/>
-  <text class="t s" x="170" y="190" text-anchor="middle">Name: "Front Desk 1"</text>
-  <text class="t s" x="170" y="207" text-anchor="middle">[ Connect ]</text>
+  <rect class="note" x="60" y="168" width="220" height="60" rx="8"/>
+  <text class="t s" x="170" y="186" text-anchor="middle">Name: "Front Desk 1"</text>
+  <text class="t s" x="170" y="203" text-anchor="middle">Code from tray: 482-917</text>
+  <text class="t s" x="170" y="220" text-anchor="middle">[ Connect ]</text>
+
+  <!-- Tray shows the code -->
+  <rect class="note" x="680" y="168" width="220" height="44" rx="8"/>
+  <text class="t s" x="790" y="186" text-anchor="middle">Tray shows connect code</text>
+  <text class="m s" x="790" y="203" text-anchor="middle">in memory only</text>
 
   <!-- 2 create device -->
   <circle class="num" cx="150" cy="252" r="9"/><text class="numt" x="150" y="256" text-anchor="middle">2</text>
@@ -87,10 +93,10 @@
   <!-- 3 pair -->
   <circle class="num" cx="150" cy="400" r="9"/><text class="numt" x="150" y="404" text-anchor="middle">3</text>
   <line class="ln" x1="170" y1="400" x2="786" y2="400" marker-end="url(#a)"/>
-  <text class="t s" x="200" y="392">POST /pair { secret, hotel }</text>
+  <text class="t s" x="200" y="392">POST /pair { secret, code, hotel }</text>
 
   <rect class="note" x="680" y="416" width="220" height="44" rx="8"/>
-  <text class="t s" x="790" y="434" text-anchor="middle">Store SHA-256(secret)</text>
+  <text class="t s" x="790" y="434" text-anchor="middle">Check code, store SHA-256(secret)</text>
   <text class="m s" x="790" y="451" text-anchor="middle">shared file for all users</text>
 
   <line class="ret" x1="790" y1="486" x2="174" y2="486" marker-end="url(#a)"/>
@@ -103,7 +109,7 @@
 
   <!-- Rules -->
   <rect class="rule" x="40" y="566" width="880" height="76" rx="10"/>
-  <text class="t s" x="60" y="590">• /pair is only accepted while the computer is not connected. Moving to another hotel means disconnecting first.</text>
+  <text class="t s" x="60" y="590">• /pair needs the tray's connect code and works only while not connected. Moving to another hotel means disconnecting first.</text>
   <text class="t s" x="60" y="610">• Disconnect in Estatell → the server stops giving out this computer's token → it stops reading at once.</text>
   <text class="t s" x="60" y="630">• Hotel record lost? Reinstall MyKad Reader, or run it with --reset-pairing.</text>
 </svg>

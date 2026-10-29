@@ -12,7 +12,7 @@ The build plan as a list of commits, in build order. Any agent (Claude Code, Cod
 6. Items marked **estatell** or **estatell-docs** are commits in that repo. Add them to that repo's `docs/checklist.md` when work starts there, and tick them here when they land.
 7. The user can reorder, split or remove items. Edit this file when that happens.
 
-Legend: **Needs** lists items that must be done first. Scopes: `card`, `bridge`, `pairing`, `packaging`, `ci`, `docs`.
+Legend: **Needs** lists items that must be done first. Scopes: `card`, `bridge`, `tray`, `pairing`, `packaging`, `ci`, `docs`.
 
 ## Now
 
@@ -32,13 +32,15 @@ AOT and PC/SC must work before anything else is built. Docs: [PC/SC access](01-c
 
 ### M1: the bridge and connecting
 
-Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md), [Connecting](02-bridge/03-connecting.md).
+Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md), [Connecting](02-bridge/03-connecting.md), [Tray](02-bridge/04-tray.md).
 
+- [ ] `spike(tray): show a tray icon from an AOT build` — a throw-away app with a Kestrel server on a background thread and a tray icon with a two-item menu: `Shell_NotifyIcon` on `win-x64`, `NSStatusItem` through `objc_msgSend` on `osx-arm64`, inside a minimal `.app` with `LSUIElement`. Record: AOT and trim warnings, binary size, whether the menu works on both, light and dark icons. Write the result in [Tray](02-bridge/04-tray.md). Code stays in `spikes/TrayAot/`, outside the solution. Needs: the solution. Docs: [Tray](02-bridge/04-tray.md).
 - [ ] `feat(bridge): serve status on 127.0.0.1:9292` — `CreateSlimBuilder`, `GET /status` (`/`, `/health`) with the 1.x field names plus `device_id`, `paired`, `property_name`, the source-generated JSON context, `--foreground`, `--verbose`, `--version`. Needs: the reader interface. Docs: [GET /status](02-bridge/01-http-api.md#get-status).
 - [ ] `feat(bridge): refuse foreign hosts and origins` — the Host check, the origin allowlist with `ESTATELL_BRIDGE_ORIGINS` and the dev pattern, CORS and PNA preflight, `403` with `code: forbidden`. Tests for each allowed and refused case. Needs: serve status. Docs: [Checks](02-bridge/02-security.md#checks).
 - [ ] `feat(bridge): log to a rotating file without card data` — the 1.x paths, 1 MB plus 2 files, a test that a read writes no card field to the log. Needs: serve status. Docs: [Logs](02-bridge/02-security.md#logs).
-- [ ] `feat(bridge): run as a single instance` — `SO_EXCLUSIVEADDRUSE` on Windows, exit 0 when the port is taken. Needs: serve status. Docs: [Single instance](02-bridge/02-security.md#single-instance).
-- [ ] `feat(pairing): connect and disconnect this computer` — `device_id` on first start, the shared pairing file (DPAPI on Windows, `0660` on macOS), `POST /pair`, `POST /unpair`, `--reset-pairing`, constant-time compare. Tests for each `/pair` rule. Needs: refuse foreign hosts. Docs: [Connecting](02-bridge/03-connecting.md), [Token](02-bridge/02-security.md#token).
+- [ ] `feat(bridge): run as a single instance` — `SO_EXCLUSIVEADDRUSE` on Windows, the per-user lock, exit 0 for a second copy of the same user, wait for the port for another user. Needs: serve status. Docs: [Single instance](02-bridge/02-security.md#single-instance), [More than one user](02-bridge/04-tray.md#more-than-one-user).
+- [ ] `feat(tray): show the status in the tray and menu bar` — `ITray` with the Windows and macOS versions from the spike and a no-op one, the status lines and icons, **Open MyKad Reader settings**, **Help**, **Restart MyKad Reader**, `WinExe` with `AllocConsole` for `--foreground`, `--no-tray`. Needs: the tray spike, run as a single instance. Docs: [Tray](02-bridge/04-tray.md).
+- [ ] `feat(pairing): connect and disconnect this computer` — `device_id` on first start, the shared pairing file (DPAPI on Windows, `0660` on macOS), the connect code in the tray (5 tries, then **New connect code**), `POST /pair` with the code, `POST /unpair`, `--reset-pairing`, constant-time compare. Tests for each `/pair` rule, `wrong_code` and `locked`. Needs: refuse foreign hosts, show the status in the tray. Docs: [Connecting](02-bridge/03-connecting.md), [Token](02-bridge/02-security.md#token), [Connect code](02-bridge/04-tray.md#connect-code).
 - [ ] `feat(bridge): read the card with a token` — `GET`/`POST /read`, `401` without the token, the error `code` table, the 10-second read timeout and `409 busy`. Needs: connect and disconnect, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
 
 ### M2: Estatell side
@@ -47,7 +49,7 @@ Docs: [App changes](04-estatell/02-app-changes.md), [Settings page](04-estatell/
 
 - [ ] **estatell** `docs(guests): plan MyKad Reader 2.0.0 and connecting` — rewrite `docs/11-guests/05-mykad-reader.md` and add the items below to the Estatell checklist.
 - [ ] **estatell** `feat(guests): add MyKad reader devices and tokens` — `mykad_devices` migration, model, factory, `mykad-reader.manage` with the role seeder, `devices.store`, `devices.update`, `devices.destroy`, `mykad.token`, activity log entries, Pest tests (other property, revoked, last seen throttle). Needs: the Estatell docs item.
-- [ ] **estatell** `feat(guests): add the MyKad Reader settings page` — the steps, the other states, the connected computers table, the try-it read, the settings navigation item, `wayfinder:generate`. Needs: devices and tokens, connect and disconnect (this repo). Docs: [Settings page](04-estatell/01-settings-page.md).
+- [ ] **estatell** `feat(guests): add the MyKad Reader settings page` — the steps with the connect code field and the tray picture, the other states (with `wrong_code` and `locked`), the connected computers table, the try-it read, the settings navigation item, `wayfinder:generate`. Needs: devices and tokens, connect and disconnect (this repo). Docs: [Settings page](04-estatell/01-settings-page.md).
 - [ ] **estatell** `feat(guests): read MyKad with a device token` — `useMykadReader` gets the token, sends the header, handles `401` and `code`, reads the 2.0.0 names only, `REQUIRED_BRIDGE_VERSION = '2.0.0'`; `MykadScanner` becomes the status chip; `bridgeDownload()` points to GitHub Releases. Needs: the settings page, read the card with a token (this repo). Docs: [Check-in chip](04-estatell/01-settings-page.md#check-in-chip).
 
 ### M3: ship
@@ -55,9 +57,9 @@ Docs: [App changes](04-estatell/02-app-changes.md), [Settings page](04-estatell/
 Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packaging/02-build-and-release.md), [User docs](04-estatell/03-user-docs.md).
 
 - [ ] `feat(packaging): build the Windows installer` — `installer.iss`: install path, **MyKad Reader** display name, Run key, data folder with Users modify, silent switches, stop and replace an older copy, remove 1.x Python files. Needs: read the card with a token. Docs: [Windows](03-packaging/01-installers.md#windows).
-- [ ] `feat(packaging): build the macOS package` — universal binary with `lipo`, `pkgbuild` and `productbuild`, the LaunchAgent, pre- and post-install scripts, data folder, **Uninstall MyKad Reader.app**. Needs: read the card with a token. Docs: [macOS](03-packaging/01-installers.md#macos).
+- [ ] `feat(packaging): build the macOS package` — universal binary with `lipo`, `MyKad Reader.app` with `LSUIElement`, `pkgbuild` and `productbuild`, the LaunchAgent with `LimitLoadToSessionType` `Aqua`, pre- and post-install scripts, data folder, **Uninstall MyKad Reader.app**. Needs: read the card with a token. Docs: [macOS](03-packaging/01-installers.md#macos).
 - [ ] `ci: build, smoke test and release on tags` — `release.yml` with the Windows and macOS jobs, the smoke tests, the version from the tag, GitHub Release on `v*` in this public repo. Needs: both installers. Docs: [Build and release](03-packaging/02-build-and-release.md).
-- [ ] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader`, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt screenshots, the S8 exception, a link from onboarding. Needs: the settings page. Docs: [User docs](04-estatell/03-user-docs.md).
+- [ ] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader`, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt and tray screenshots, the S8 exception, a link from onboarding. Needs: the settings page. Docs: [User docs](04-estatell/03-user-docs.md).
 - [ ] `chore: release 2.0.0` — run the [clean computer checks](03-packaging/01-installers.md#checks-on-a-clean-computer) on an x64 Windows 10 PC and a Mac on macOS 15, then tag `v2.0.0`. Needs: CI, the Estatell items, the user docs.
 - [ ] **estatell** `chore(guests): remove the Python MyKad bridge` — delete `tools/mykad-bridge/`, `mykad-bridge.yml` and the files in `public/downloads/`; remove the Python sections from the Estatell docs. Needs: release 2.0.0.
 

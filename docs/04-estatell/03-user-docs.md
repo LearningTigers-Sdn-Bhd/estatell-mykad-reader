@@ -45,8 +45,9 @@ In `estatell-docs/content/docs/en/guests/identity-documents/`. `meta.json` lists
 
 1. Go back to **Settings → MyKad Reader**. The page moves on by itself.
 2. Name the computer, for example "Front Desk 1".
-3. Select **Connect**.
-4. Insert any MyKad to try it. Nothing is saved.
+3. Click the MyKad Reader icon. On Windows it is near the clock (look under **^** if you don't see it). On a Mac it is at the top of the screen. Type the **Connect code** it shows.
+4. Select **Connect**.
+5. Insert any MyKad to try it. Nothing is saved.
 
 ## `mykad-reader-problems`
 
@@ -57,12 +58,15 @@ In `estatell-docs/content/docs/en/guests/identity-documents/`. `meta.json` lists
 | "Plug in card reader"                | Plug the reader in. Try another USB port                                  |
 | The card isn't read                  | Take the card out. Insert it chip first and face up, then wait            |
 | "Connected to another hotel"         | That hotel's admin disconnects it first                                   |
+| "That code doesn't match"            | Click the MyKad Reader icon and type the code it shows now                |
+| "Too many tries"                     | Click the MyKad Reader icon, choose **New connect code**, type the new code |
+| No MyKad Reader icon                 | On Windows, look under **^** near the clock. Otherwise restart the computer |
 | Security software removed the app    | Restore it and choose **Allow**, then install again                       |
 | "Update required"                    | Download the update and open it once                                      |
 
 ## Screenshots
 
-Real screenshots of the Windows and Mac confirm prompts, with the buttons numbered. The estatell-docs plan says MyKad pages use special-case tables, not live reader screenshots (S8). Add an exception for the install prompts.
+Real screenshots of the Windows and Mac confirm prompts, with the buttons numbered, and of the MyKad Reader icon and menu on both. The estatell-docs plan says MyKad pages use special-case tables, not live reader screenshots (S8). Add an exception for the install prompts.
 
 ## Wording
 

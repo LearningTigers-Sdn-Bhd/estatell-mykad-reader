@@ -13,19 +13,21 @@ One page in Estatell, **Settings → MyKad Reader**, where an admin installs MyK
 The page calls `GET /status` on load and every 2.5 seconds, and shows the first step that is not done.
 
 ```
- ① Download             ② Install                  ③ Connect             ✓ All set
- [Download for Windows]  "Open the file and follow   Name this computer     Insert any MyKad
- Using a Mac? …          the steps.                  [Front Desk 1]         to try it.
-                         Need help? How to install ↗" [Connect to <hotel>]   Nothing is saved.
-                         Waiting for MyKad Reader… ◌
-                         (page moves on by itself)
+ ① Download             ② Install                  ③ Connect                  ✓ All set
+ [Download for Windows]  "Open the file and follow   Name this computer          Insert any MyKad
+ Using a Mac? …          the steps.                  [Front Desk 1]              to try it.
+                         Need help? How to install ↗" Connect code               Nothing is saved.
+                         Waiting for MyKad Reader… ◌  [482-917]
+                         (page moves on by itself)    Find it in the MyKad Reader
+                                                      icon (tray picture ↗)
+                                                      [Connect to <hotel>]
 ```
 
 | Step     | Shown when                     | Content                                                                                       |
 | -------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
 | Download | `/status` does not answer      | One button for the detected OS, a link for the other OS, the supported systems                 |
 | Install  | After a download, until `/status` answers | "Open the file and follow the steps." and **How to install ↗** to the user docs. Waits by itself |
-| Connect  | `/status` answers, `paired: false` | Computer name (required, 40 characters), **Connect to {hotel}**                            |
+| Connect  | `/status` answers, `paired: false` | Computer name (required, 40 characters), connect code (6 digits, from the tray menu), **Connect to {hotel}**. A small picture shows where the icon is on Windows and on a Mac |
 | All set  | Connected to this hotel        | A try-it read. Shows the name and a masked IC. Saves nothing                                   |
 
 ## Other states
@@ -35,6 +37,8 @@ The page calls `GET /status` on load and every 2.5 seconds, and shows the first 
 | App not running after install      | "MyKad Reader isn't running. Restart the computer, or download it again."                       |
 | No reader                          | "Plug the card reader into this computer."                                                      |
 | Connected to another hotel         | "This computer is connected to another hotel. Ask that hotel's admin to disconnect it first."    |
+| Wrong connect code (`wrong_code`)  | "That code doesn't match. Check the MyKad Reader icon and try again."                           |
+| Too many wrong codes (`locked`)    | "Too many tries. Click the MyKad Reader icon, choose New connect code, and type the new code."  |
 | Update available                   | "A newer version of MyKad Reader is available. [Download update] It keeps working while you wait." |
 | Update required (1.x)              | "Please update MyKad Reader to keep reading MyKad. [Download update]"                           |
 

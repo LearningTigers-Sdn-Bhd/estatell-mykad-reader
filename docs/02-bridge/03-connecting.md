@@ -11,8 +11,8 @@ Screens say **connect** and **disconnect**. Code says `pair` and `unpair`.
 ![Connecting a computer to a hotel](../diagrams/connect-flow.svg)
 
 1. The admin opens **Settings → MyKad Reader** on the front-desk computer. The page calls `GET /status` and gets `device_id` and `paired: false`.
-2. The admin names the computer and selects **Connect**. The page calls Estatell, which makes a device record and a random 32-byte secret. Estatell returns the secret once.
-3. The page sends the secret to `POST /pair`. MyKad Reader stores its hash.
+2. The admin names the computer, types the connect code from the MyKad Reader [tray menu](04-tray.md#connect-code) and selects **Connect**. The page calls Estatell, which makes a device record and a random 32-byte secret. Estatell returns the secret once.
+3. The page sends the secret and the code to `POST /pair`. MyKad Reader checks the code and stores the hash of the secret.
 
 ## Reading after connecting
 
@@ -25,6 +25,8 @@ See [How a scan works](../overview.md#how-a-scan-works).
 ## Rules
 
 - `/pair` works only while not connected. To move a computer to another hotel, disconnect it first.
+- `/pair` needs the connect code shown in the tray. Only a person at this computer can see it, so another program or website cannot connect the computer first. After 5 wrong codes `/pair` locks until the admin selects **New connect code** in the tray.
+- If the Estatell call in step 2 succeeds but `/pair` fails (wrong code), the page disconnects the new device record (`devices.destroy`), so a retry starts clean.
 - Disconnect from Estatell: Estatell sets `revoked_at` and stops giving out the token. The computer stops reading at once. MyKad Reader keeps its hash until the next `/pair` or `/unpair`.
 - Disconnect from the computer: the page calls `/unpair` with the token, then tells Estatell.
 - One computer, one hotel. See [Open questions](#open-questions).
