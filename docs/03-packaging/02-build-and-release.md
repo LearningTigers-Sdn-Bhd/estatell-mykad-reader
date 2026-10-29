@@ -13,7 +13,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 | `windows-latest` | .NET 10 SDK → `dotnet publish src/Estatell.MyKad.Bridge -c Release -r win-x64`, same for `win-arm64` → Inno Setup |
 | `macos-latest`   | .NET 10 SDK → publish `osx-arm64` and `osx-x64` → `lipo -create` → `pkgbuild` → `productbuild` |
 
-`win-x86` is added only if the M0 spike shows AOT supports it.
+`win-x86` is added only if the M0 spike shows AOT supports it. The `spike-pcsc-aot` workflow checks this.
 
 ## Smoke tests
 
@@ -49,4 +49,4 @@ https://github.com/<org>/estatell-mykad-reader/releases/latest/download/estatell
 
 ## Licences
 
-Inno Setup is free for commercial use. Since 6.5.0 its author asks commercial users to buy a licence, but it is not required. `pkgbuild`, `productbuild` and `lipo` ship with Xcode. .NET is MIT. Check the `PCSC` licence in the M0 spike.
+Inno Setup is free for commercial use. Since 6.5.0 its author asks commercial users to buy a licence, but it is not required. `pkgbuild`, `productbuild` and `lipo` ship with Xcode. .NET is MIT. `PCSC` is BSD-2-Clause: include its copyright notice and licence text with the installers.

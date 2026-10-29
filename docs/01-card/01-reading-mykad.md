@@ -29,6 +29,22 @@ Files, in read order:
 
 The portrait is the slowest part. It is read last, so a later `?photo=false` can skip it (M4).
 
+## Read time
+
+Measured in the M0 spike on an ACR39U, macOS, T=0:
+
+| Step              | Time      |
+| ----------------- | --------- |
+| Connect           | 14–83 ms  |
+| JPN1-1 (identity) | 0.48 s    |
+| JPN1-4 (address)  | 0.20 s    |
+| JPN1-2 (portrait) | 3.93 s    |
+| Full read         | about 4.65 s |
+
+- The card sets the speed. Its ATR offers no rate above the default 9600 baud, about 1 KB a second. Code cannot make it faster.
+- Without the portrait a read takes about 0.7 s. This makes `?photo=false` (M4) worth more, or filling the form before the portrait arrives.
+- The 10-second read timeout and the hook's 12 seconds still fit.
+
 ## Fields
 
 Text is ASCII and trimmed.

@@ -1,6 +1,6 @@
 # MyKad Reader
 
-A small native app for the hotel front-desk computer. It reads the chip on a guest's MyKad through a USB card reader and fills the Estatell guest form in under 2 seconds.
+A small native app for the hotel front-desk computer. It reads the chip on a guest's MyKad through a USB card reader and fills the Estatell guest form in about 5 seconds, most of it the portrait.
 
 It replaces the Python bridge in `estatell/tools/mykad-bridge/`. Built with .NET 10 (Native AOT) for Windows 10/11 and macOS 15+.
 

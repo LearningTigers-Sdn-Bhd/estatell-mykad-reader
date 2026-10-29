@@ -40,16 +40,16 @@ Estatell on `*.test` or `localhost` is an allowed origin, so a local Estatell ca
 ## Machines
 
 ```
- Your Mac                    CI                        Release check
- ─────────                   ──                        ─────────────
- build + test osx            win-x64/arm64 + osx        1× x64 Windows 10 PC
- ACR39U on USB               smoke tests                with ACR39U
- Parallels Win11 ARM                                    (what hotels have)
-  (tests win-arm64 only)
+ Your Mac                    CI (GitHub Actions)       Real Windows PC
+ ─────────                   ───────────────────       ───────────────
+ build + test osx            win-x64/arm64/x86 + osx   1× x64 Windows 10 or 11
+ ACR39U on USB               AOT warnings, smoke tests with ACR39U
+                             .exe as a download        (what hotels have)
 ```
 
-- A Windows 11 VM in Parallels on Apple Silicon is Windows on Arm. It tests `win-arm64`, not the x64 build most hotels run. Pass the reader into the VM over USB.
-- Keep one real x64 Windows 10 PC for release checks.
+- There is no Windows VM. Windows builds come from CI. Card reads on Windows are checked on a real x64 PC.
+- To try a build on a Windows PC, download the `.exe` from the workflow run. It is one file and needs nothing installed. The reader uses the built-in Windows driver.
+- Keep one real x64 Windows PC for release checks.
 
 ## Tests
 

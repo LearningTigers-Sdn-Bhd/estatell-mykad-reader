@@ -2,7 +2,7 @@
 
 ## Description
 
-MyKad Reader is a small native app for the front-desk computer. It reads the chip on a guest's MyKad through a USB card reader and gives the result to the Estatell web app. The Estatell guest form fills in under 2 seconds. Staff check the details and save.
+MyKad Reader is a small native app for the front-desk computer. It reads the chip on a guest's MyKad through a USB card reader and gives the result to the Estatell web app. The Estatell guest form fills in about 5 seconds. The card itself sets that speed (see [Read time](01-card/01-reading-mykad.md#read-time)). Staff check the details and save.
 
 A web page cannot talk to a USB card reader. MyKad Reader does it and answers Estatell over HTTP on `127.0.0.1:9292`. Developer docs call it **the bridge**. Screens and user docs call it **MyKad Reader**.
 

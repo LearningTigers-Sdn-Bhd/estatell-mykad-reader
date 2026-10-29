@@ -1,0 +1,55 @@
+# M0 spike: does the PCSC package publish cleanly with Native AOT on Windows?
+# Builds spikes/PcscAot for each Windows architecture and uploads the .exe
+# so it can be tried on a real PC with a card reader.
+name: spike-pcsc-aot
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - spikes/PcscAot/**
+      - .github/workflows/spike-pcsc-aot.yml
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [win-x64, win-arm64, win-x86]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          dotnet publish spikes/PcscAot -c Release -r ${{ matrix.rid }} -o publish 2>&1 | Tee-Object publish.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Report warnings and size
+        shell: pwsh
+        run: |
+          $warnings = Select-String -Path publish.log -Pattern 'warning (IL|AOT)\d+' | ForEach-Object { $_.Line.Trim() } | Sort-Object -Unique
+          $size = (Get-Item publish/PcscAot.exe).Length
+          "## ${{ matrix.rid }}" >> $env:GITHUB_STEP_SUMMARY
+          "- Size: $([math]::Round($size / 1MB, 2)) MB ($size bytes)" >> $env:GITHUB_STEP_SUMMARY
+          "- AOT and trim warnings: $($warnings.Count)" >> $env:GITHUB_STEP_SUMMARY
+          $warnings | ForEach-Object { "  - ``$_``" >> $env:GITHUB_STEP_SUMMARY }
+
+      # No reader on the runner. This only shows the exe starts and reaches winscard.dll.
+      - name: Start without a reader
+        if: matrix.rid != 'win-arm64'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          ./publish/PcscAot.exe --t0 2>&1 | Tee-Object run.log
+          "- Run without a reader: ``$((Get-Content run.log | Select-Object -Last 1))``" >> $env:GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: PcscAot-${{ matrix.rid }}
+          path: publish/PcscAot.exe
