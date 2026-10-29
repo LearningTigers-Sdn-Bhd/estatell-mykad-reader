@@ -45,6 +45,10 @@ internal sealed record BridgeStatus(
     string? ReaderName,
     bool CardPresent);
 
+/// <summary>Every failure body. <c>Error</c> is for logs and developers and never holds card data.</summary>
+internal sealed record BridgeError(bool Success, string Code, string Error);
+
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [JsonSerializable(typeof(BridgeStatus))]
+[JsonSerializable(typeof(BridgeError))]
 internal sealed partial class BridgeJson : JsonSerializerContext;

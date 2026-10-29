@@ -19,8 +19,10 @@ Every request runs these in order. The card is never touched before all pass.
 ## Allowed origins
 
 - `https://app.estatell.com`, `https://demo.estatell.com`.
-- For development: `http(s)://localhost`, `127.0.0.1` and any `*.test`, with any port.
-- `ESTATELL_BRIDGE_ORIGINS` adds more, comma separated.
+- For development: `http(s)://localhost`, `127.0.0.1` and any `*.test`, with any port. These stay allowed in release builds, so a local Estatell can test against an installed MyKad Reader. Reading still needs the token.
+- `ESTATELL_BRIDGE_ORIGINS` adds more, comma separated, each `http(s)://host[:port]`. A trailing `/` is ignored. Any other entry is skipped with a warning in the log.
+- Matching ignores case and compares the parsed host, so `app.estatell.com.evil.com` and `foo.test.evil.com` are refused.
+- `Origin: null` (sandboxed frames, `file://` pages) is refused.
 
 A request with no `Origin` passes check 3, as in 1.x (for example `curl` on the same computer). It still needs the token for `/read` and the connect code for `/pair`.
 
@@ -31,6 +33,19 @@ A request with no `Origin` passes check 3, as in 1.x (for example `curl` on the 
 ## Private Network Access
 
 Chrome asks before an HTTPS page calls `127.0.0.1`. The preflight answer sends `Access-Control-Allow-Private-Network: true` for allowed origins.
+
+An `OPTIONS` request from an allowed origin gets `204` and never reaches a route:
+
+```
+Access-Control-Allow-Origin: <origin>
+Vary: Origin
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Headers: Authorization, Content-Type
+Access-Control-Max-Age: 600
+Access-Control-Allow-Private-Network: true    (only when the browser sends Access-Control-Request-Private-Network)
+```
+
+A refused origin gets `403` with `code: forbidden` and no CORS headers.
 
 ## Token
 

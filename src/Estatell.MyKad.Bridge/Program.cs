@@ -21,6 +21,7 @@ builder.Services.ConfigureHttpJsonOptions(json =>
 });
 builder.Services.AddSingleton<IReader, PcscReader>();
 builder.Services.AddSingleton<IConnectionState, MemoryConnectionState>();
+builder.Services.AddSingleton(_ => new OriginPolicy(Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable)));
 
 if (!options.Foreground)
 {
@@ -42,6 +43,15 @@ app.Use((context, next) =>
     return next(context);
 });
 
+var policy = app.Services.GetRequiredService<OriginPolicy>();
+var checksLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(RequestChecks).FullName!);
+foreach (var skipped in policy.Skipped)
+{
+    StartupLog.SkippedOrigin(checksLogger, skipped, OriginPolicy.EnvironmentVariable);
+}
+
+app.Use((context, next) => RequestChecks.InvokeAsync(context, next, policy, checksLogger));
+
 app.MapGet("/status", StatusRoute.Get);
 app.MapGet("/", StatusRoute.Get);
 app.MapGet("/health", StatusRoute.Get);
@@ -49,3 +59,9 @@ app.MapGet("/health", StatusRoute.Get);
 app.Run();
 
 public partial class Program;
+
+internal static partial class StartupLog
+{
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Skipped '{Origin}' in {Variable}. Use http(s)://host[:port].")]
+    public static partial void SkippedOrigin(ILogger logger, string origin, string variable);
+}

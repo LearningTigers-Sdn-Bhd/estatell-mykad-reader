@@ -5,9 +5,29 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Estatell.MyKad.Bridge.Tests;
 
-/// <summary>The bridge in a test host, with a <see cref="FakeReader"/> in place of PC/SC.</summary>
-internal sealed class BridgeFactory(FakeReader reader) : WebApplicationFactory<Program>
+/// <summary>
+/// The bridge in a test host, with a <see cref="FakeReader"/> in place of PC/SC.
+/// The client sends <c>Host: 127.0.0.1:9292</c>, as a browser on this computer does.
+/// </summary>
+internal sealed class BridgeFactory : WebApplicationFactory<Program>
 {
+    private readonly FakeReader _reader;
+    private readonly OriginPolicy? _policy;
+
+    public BridgeFactory(FakeReader reader, OriginPolicy? policy = null)
+    {
+        _reader = reader;
+        _policy = policy;
+        ClientOptions.BaseAddress = new Uri("http://127.0.0.1:9292");
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
-        builder.ConfigureServices(services => services.AddSingleton<IReader>(reader));
+        builder.ConfigureServices(services =>
+        {
+            services.AddSingleton<IReader>(_reader);
+            if (_policy is not null)
+            {
+                services.AddSingleton(_policy);
+            }
+        });
 }
