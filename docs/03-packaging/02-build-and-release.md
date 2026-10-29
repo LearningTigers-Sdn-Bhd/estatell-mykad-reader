@@ -13,7 +13,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 | `windows-latest` | .NET 10 SDK → `dotnet publish src/Estatell.MyKad.Bridge -c Release -r win-x64`, same for `win-arm64` → Inno Setup |
 | `macos-latest`   | .NET 10 SDK → publish `osx-arm64` and `osx-x64` → `lipo -create` → `pkgbuild` → `productbuild` |
 
-`win-x86` is added only if the M0 spike shows AOT supports it. The `spike-pcsc-aot` workflow checks this.
+`win-x86` publishes with AOT (M0 spike, 1.7 MB). Ship it only if a hotel still runs 32-bit Windows 10. One Inno Setup installer can carry x64, arm64 and x86.
 
 ## Smoke tests
 
@@ -35,11 +35,11 @@ Each runner starts the built app and checks:
 - Estatell links never change:
 
 ```
-https://github.com/<org>/estatell-mykad-reader/releases/latest/download/estatell-mykad-setup.exe
-https://github.com/<org>/estatell-mykad-reader/releases/latest/download/estatell-mykad.pkg
+https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad-setup.exe
+https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad.pkg
 ```
 
-- The repo must be public, or CI publishes to a separate public repo (`estatell-mykad-releases`). Hotel admins have no GitHub login.
+- The repo is public (`LearningTigers-Sdn-Bhd/estatell-mykad-reader`), so hotel admins download without a GitHub login, and Actions minutes are free.
 
 ## Versions
 
