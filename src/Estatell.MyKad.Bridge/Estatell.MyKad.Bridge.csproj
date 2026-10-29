@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>mykad-bridge</AssemblyName>
+    <RootNamespace>Estatell.MyKad.Bridge</RootNamespace>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Estatell.MyKad\Estatell.MyKad.csproj" />
+  </ItemGroup>
+</Project>

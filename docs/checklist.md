@@ -21,7 +21,7 @@ Legend: **Needs** lists items that must be done first. Scopes: `card`, `bridge`,
 AOT and PC/SC must work before anything else is built. Docs: [PC/SC access](01-card/02-pcsc.md), [Reading a MyKad](01-card/01-reading-mykad.md).
 
 - [x] `docs: plan MyKad Reader 2.0.0` — this docs folder, the README and the diagrams. Start the git repo with it.
-- [ ] `chore: add the .NET 10 solution and projects` — `Estatell.MyKad`, `Estatell.MyKad.Bridge`, two test projects, `Directory.Build.props` (version, `PublishAot`, nullable, warnings as errors), `.editorconfig`, `global.json` pinning the .NET 10 SDK.
+- [x] `chore: add the .NET 10 solution and projects` — `EstatellMyKadReader.slnx`, `Estatell.MyKad` (`IsAotCompatible`), `Estatell.MyKad.Bridge` (`PublishAot`, binary `mykad-bridge`), two xUnit v3 test projects, `Directory.Build.props` (version, nullable, warnings as errors), `Directory.Packages.props`, `.editorconfig`, `global.json` pinning the .NET 10 SDK and the Microsoft Testing Platform runner.
 - [ ] `spike(card): read a MyKad with PCSC in an AOT build` — a throw-away console app that selects JPN and reads JPN1-1 with the `PCSC` NuGet, published with AOT for `osx-arm64` and `win-x64`. Record: AOT and trim warnings, whether it reads on both, the binary size, the `PCSC` licence, and whether `win-x86` publishes. Write the result in [PC/SC access](01-card/02-pcsc.md#library) and pick the library. Not merged as code. Needs: the solution.
 - [ ] `feat(card): add the reader interface and PC/SC reader` — `IReader`, `ReaderStatus`, `PcscReader` with the library the spike chose (or own `[LibraryImport]` bindings), `FakeReader`, context reopen on service stop, exclusive connect, one read at a time. Needs: the spike. Docs: [PC/SC access](01-card/02-pcsc.md).
 - [ ] `feat(card): read and decode the JPN files` — the APDU sequence, JPN1-1, JPN1-4 and JPN1-2, each field, BCD date and postcode, title case, line 3 joined to line 2, `CardReadException`, buffers cleared. Unit tests per field with fixtures. Needs: the reader interface. Docs: [Read sequence](01-card/01-reading-mykad.md#read-sequence), [Fields](01-card/01-reading-mykad.md#fields).
@@ -81,3 +81,4 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 
 | Commit | Subject |
 | ------ | ------- |
+| `e23270e` | `docs: plan MyKad Reader 2.0.0` |

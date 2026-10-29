@@ -6,7 +6,7 @@ How to build, run and test MyKad Reader. The team works on Macs. Most hotels use
 
 ## Setup
 
-- .NET 10 SDK.
+- .NET 10 SDK, 10.0.400 or a later patch. `global.json` pins it.
 - macOS: Xcode command line tools (for the AOT linker and `lipo`).
 - An ACS ACR39U reader and a MyKad for hardware tests.
 
@@ -14,7 +14,26 @@ How to build, run and test MyKad Reader. The team works on Macs. Most hotels use
 dotnet build
 dotnet test
 dotnet run --project src/Estatell.MyKad.Bridge -- --foreground --verbose
+dotnet publish src/Estatell.MyKad.Bridge -c Release -r osx-arm64
 ```
+
+## Layout
+
+```
+EstatellMyKadReader.slnx
+global.json                    SDK pin, Microsoft Testing Platform runner
+Directory.Build.props          net10.0, version, nullable, warnings as errors
+Directory.Packages.props       all NuGet versions
+src/Estatell.MyKad/            card reading, IsAotCompatible
+src/Estatell.MyKad.Bridge/     the local server, PublishAot, binary mykad-bridge
+tests/Estatell.MyKad.Tests/
+tests/Estatell.MyKad.Bridge.Tests/
+```
+
+- Add a package version to `Directory.Packages.props`, not to the `.csproj`.
+- `PublishAot` is set in the bridge project only. Test projects cannot publish with AOT.
+- Any AOT or trim warning fails the build.
+- Test projects use xUnit v3 (`xunit.v3.mtp-v2`) and run as executables.
 
 Estatell on `*.test` or `localhost` is an allowed origin, so a local Estatell can call the local app.
 

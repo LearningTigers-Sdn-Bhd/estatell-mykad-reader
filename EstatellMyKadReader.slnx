@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Estatell.MyKad.Bridge/Estatell.MyKad.Bridge.csproj" />
+    <Project Path="src/Estatell.MyKad/Estatell.MyKad.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Estatell.MyKad.Bridge.Tests/Estatell.MyKad.Bridge.Tests.csproj" />
+    <Project Path="tests/Estatell.MyKad.Tests/Estatell.MyKad.Tests.csproj" />
+  </Folder>
+</Solution>

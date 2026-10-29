@@ -4,7 +4,7 @@ A small native app for the hotel front-desk computer. It reads the chip on a gue
 
 It replaces the Python bridge in `estatell/tools/mykad-bridge/`. Built with .NET 10 (Native AOT) for Windows 10/11 and macOS 15+.
 
-> Status: planning. No code yet.
+> Status: building. The solution builds. Card reading comes next. See the [checklist](docs/checklist.md).
 
 ![How a MyKad scan works](docs/diagrams/scan-flow.svg)
 

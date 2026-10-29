@@ -10,7 +10,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 
 | Runner           | Steps                                                                                       |
 | ---------------- | ------------------------------------------------------------------------------------------- |
-| `windows-latest` | .NET 10 SDK → `dotnet publish -c Release -r win-x64 -p:PublishAot=true`, same for `win-arm64` → Inno Setup |
+| `windows-latest` | .NET 10 SDK → `dotnet publish src/Estatell.MyKad.Bridge -c Release -r win-x64`, same for `win-arm64` → Inno Setup |
 | `macos-latest`   | .NET 10 SDK → publish `osx-arm64` and `osx-x64` → `lipo -create` → `pkgbuild` → `productbuild` |
 
 `win-x86` is added only if the M0 spike shows AOT supports it.
