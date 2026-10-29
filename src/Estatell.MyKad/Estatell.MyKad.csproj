@@ -2,4 +2,7 @@
   <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PCSC" />
+  </ItemGroup>
 </Project>

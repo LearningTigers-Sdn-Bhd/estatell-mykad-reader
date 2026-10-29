@@ -58,7 +58,11 @@ Estatell on `*.test` or `localhost` is an allowed origin, so a local Estatell ca
 | `Estatell.MyKad.Tests`          | Each field, BCD dates and postcodes, state mapping, bad status words, parity with the Python bridge. Uses `FakeReader` |
 | `Estatell.MyKad.Bridge.Tests`   | Each route, each `code`, Host and Origin checks, token checks, `/pair` rules, CORS and PNA headers. Uses `WebApplicationFactory` with `FakeReader` |
 
-- No test needs a real reader.
+- No test needs a real reader, except the hardware tests. They are skipped unless `MYKAD_HARDWARE=1` is set, with a reader and a MyKad plugged in:
+
+```
+MYKAD_HARDWARE=1 dotnet test --project tests/Estatell.MyKad.Tests
+```
 - Fixtures replace all personal data. Never commit a real card's data or portrait.
 
 ## Recording fixtures

@@ -6,7 +6,7 @@ Read the holder's details from the JPN application on the MyKad chip and return 
 
 ## Where it lives
 
-`src/Estatell.MyKad/`: `Apdu.cs`, `MyKadCard.cs`, `Decode.cs`, `States.cs`. The project has no networking and no PC/SC code. It talks to the card through `IReader` (see [PC/SC access](02-pcsc.md)).
+`src/Estatell.MyKad/`: `Apdu.cs`, `MyKadCard.cs`, `Decode.cs`, `States.cs`. The project has no networking. The card logic talks to the card only through `IReader`; `PcscReader` and `FakeReader` are in `Reader/` (see [PC/SC access](02-pcsc.md)).
 
 ## Read sequence
 
