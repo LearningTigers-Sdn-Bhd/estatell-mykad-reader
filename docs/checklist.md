@@ -34,7 +34,7 @@ AOT and PC/SC must work before anything else is built. Docs: [PC/SC access](01-c
 
 Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md), [Connecting](02-bridge/03-connecting.md), [Tray](02-bridge/04-tray.md).
 
-- [ ] `spike(tray): show a tray icon from an AOT build` — a throw-away app with a Kestrel server on a background thread and a tray icon with a two-item menu: `Shell_NotifyIcon` on `win-x64`, `NSStatusItem` through `objc_msgSend` on `osx-arm64`, inside a minimal `.app` with `LSUIElement`. Record: AOT and trim warnings, binary size, whether the menu works on both, light and dark icons. Write the result in [Tray](02-bridge/04-tray.md). Code stays in `spikes/TrayAot/`, outside the solution. Needs: the solution. Docs: [Tray](02-bridge/04-tray.md).
+- [ ] `spike(tray): show a tray icon from an AOT build` — a throw-away app with a Kestrel server on a background thread and a tray icon with a two-item menu: `Shell_NotifyIcon` on `win-x64`, `NSStatusItem` through `objc_msgSend` on `osx-arm64`, inside a minimal `.app` with `LSUIElement`. Record: AOT and trim warnings, binary size, whether the menu works on both, light and dark icons. Write the result in [Tray](02-bridge/04-tray.md). Code stays in `spikes/TrayAot/`, outside the solution. Needs: the solution. Docs: [Tray](02-bridge/04-tray.md). **Mac done. Open: the Windows builds and a hand check of the menu on a PC.**
 - [ ] `feat(bridge): serve status on 127.0.0.1:9292` — `CreateSlimBuilder`, `GET /status` (`/`, `/health`) with the 1.x field names plus `device_id`, `paired`, `property_name`, the source-generated JSON context, `--foreground`, `--verbose`, `--version`. Needs: the reader interface. Docs: [GET /status](02-bridge/01-http-api.md#get-status).
 - [ ] `feat(bridge): refuse foreign hosts and origins` — the Host check, the origin allowlist with `ESTATELL_BRIDGE_ORIGINS` and the dev pattern, CORS and PNA preflight, `403` with `code: forbidden`. Tests for each allowed and refused case. Needs: serve status. Docs: [Checks](02-bridge/02-security.md#checks).
 - [ ] `feat(bridge): log to a rotating file without card data` — the 1.x paths, 1 MB plus 2 files, a test that a read writes no card field to the log. Needs: serve status. Docs: [Logs](02-bridge/02-security.md#logs).
@@ -90,3 +90,5 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `da6ca25` | `feat(card): add the reader interface and PC/SC reader` |
 | `280b457` | `feat(card): read and decode the JPN files` |
 | `939ae25` | `feat(card): map the state to the LHDN code` |
+| `54eabfe` | `test(card): match the Python bridge output` |
+| `8cb5829` | `docs(tray): plan the native tray and the connect code` |
