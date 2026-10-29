@@ -16,7 +16,7 @@ public static class MyKadCard
         ArgumentNullException.ThrowIfNull(reader);
 
         using var session = reader.Connect(cancellationToken);
-        Send(session, "Select JPN", Apdu.SelectJpn, Apdu.SelectJpnAccept);
+        SelectJpn(session);
 
         byte[] identity = [], address = [], portrait = [];
         try
@@ -42,7 +42,11 @@ public static class MyKadCard
         }
     }
 
-    private static byte[] ReadFile(IReaderSession session, JpnFile file)
+    internal static void SelectJpn(IReaderSession session) =>
+        Send(session, "Select JPN", Apdu.SelectJpn, Apdu.SelectJpnAccept);
+
+    /// <summary>One JPN file as the card sends it. The caller clears it.</summary>
+    internal static byte[] ReadFile(IReaderSession session, JpnFile file)
     {
         Send(session, $"{file.Name} set length", Apdu.SetLength(file.Length), Apdu.SetLengthAccept);
         Send(session, $"{file.Name} select", Apdu.SelectFile(file), Apdu.FileAccept);

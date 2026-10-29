@@ -26,7 +26,7 @@ AOT and PC/SC must work before anything else is built. Docs: [PC/SC access](01-c
 - [x] `feat(card): add the reader interface and PC/SC reader` — `IReader`, `IReaderSession`, `ReaderStatus`, `PcscReader` on `PCSC`, `FakeReader`, context reopen on service stop, exclusive T=0 connect, one read at a time, hardware tests behind `MYKAD_HARDWARE=1`. Needs: the spike. Docs: [PC/SC access](01-card/02-pcsc.md).
 - [x] `feat(card): read and decode the JPN files` — the APDU sequence, JPN1-1, JPN1-4 and JPN1-2, each field, BCD date and postcode, title case, line 3 joined to line 2, `CardReadException`, buffers cleared. Unit tests per field with fixtures. Needs: the reader interface. Docs: [Read sequence](01-card/01-reading-mykad.md#read-sequence), [Fields](01-card/01-reading-mykad.md#fields).
 - [x] `feat(card): map the state to the LHDN code` — port `STATE_CODES` and the postcode fallback from the Python bridge, `state` as name and `state_code` as code. Tests for each state, each postcode range and no match. Needs: decode the JPN files. Docs: [Rules](01-card/01-reading-mykad.md#rules).
-- [ ] `test(card): match the Python bridge output` — read the same test card with both, save both outputs (personal data replaced) as a parity fixture, and a test that compares them field by field. Needs: map the state. Docs: [Tests](01-card/01-reading-mykad.md#tests).
+- [x] `test(card): match the Python bridge output` — record the raw JPN files of a real card once, replace the personal data, run the Python bridge's decoder on them and save its output as a parity fixture, and a test that decodes the same files and compares field by field. Needs: map the state. Docs: [Tests](01-card/01-reading-mykad.md#tests).
 
 ## Next
 
@@ -87,3 +87,4 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `5588059` | `docs(card): record the Windows spike builds` |
 | `da6ca25` | `feat(card): add the reader interface and PC/SC reader` |
 | `280b457` | `feat(card): read and decode the JPN files` |
+| `939ae25` | `feat(card): map the state to the LHDN code` |

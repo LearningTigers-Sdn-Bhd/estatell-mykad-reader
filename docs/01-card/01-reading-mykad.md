@@ -99,6 +99,6 @@ The Python bridge sends other names (`raw_ic`, `government_id`, `state_name`, `h
 ## Tests
 
 - `Card/CardFixture.cs` builds made-up JPN files at the real offsets and the full command and response sequence for `FakeReader`.
-- Recorded responses from a real card in `tests/Estatell.MyKad.Tests/fixtures/`, with personal data replaced (the parity item).
+- The raw JPN files of a real card in `tests/Estatell.MyKad.Tests/fixtures/parity/`, with personal data replaced. See [Recording the parity fixture](../05-development/01-setup-and-testing.md#recording-the-parity-fixture).
 - One test per field, including an empty portrait, a non-JPEG portrait, an unknown state with a postcode, and each failing status word.
-- A parity test: the fixture output must equal the Python bridge output saved next to it.
+- A parity test (`Card/ParityTests.cs`): the fixture files must decode to `python.json`, the Python bridge's output for the same files. Both decoders read the same bytes, so a difference is a decode difference, not a read difference. The test maps the 1.x names and allows only the changes in [Rules](#rules): line 3 joined to line 2, empty date and postcode instead of zeros, and NUL padding trimmed (Python's `strip()` keeps it).

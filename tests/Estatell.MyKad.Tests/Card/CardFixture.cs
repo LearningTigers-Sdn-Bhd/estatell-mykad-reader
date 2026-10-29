@@ -61,12 +61,15 @@ internal sealed class CardFixture
     }
 
     /// <summary>Every command of a full read, in order.</summary>
-    public IReadOnlyList<Step> Steps() =>
+    public IReadOnlyList<Step> Steps() => Steps(Identity(), Address(), Portrait());
+
+    /// <summary>Every command of a full read of a card that holds these files, in order.</summary>
+    public static IReadOnlyList<Step> Steps(byte[] identity, byte[] address, byte[] portrait) =>
         [
             new("Select JPN", Apdu.SelectJpn, []),
-            .. FileSteps(JpnFile.Identity, Identity()),
-            .. FileSteps(JpnFile.Address, Address()),
-            .. FileSteps(JpnFile.Portrait, Portrait()),
+            .. FileSteps(JpnFile.Identity, identity),
+            .. FileSteps(JpnFile.Address, address),
+            .. FileSteps(JpnFile.Portrait, portrait),
         ];
 
     /// <summary>A reader that answers a full read. The step at <paramref name="failAt"/> gets <c>6A 82</c> and ends the queue.</summary>

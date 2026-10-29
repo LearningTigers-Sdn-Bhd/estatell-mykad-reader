@@ -38,6 +38,33 @@ public class PcscReaderHardwareTests
         Assert.Contains(again.Transmit(_selectJpn).Sw1, new byte[] { 0x61, 0x90 });
     }
 
+    /// <summary>
+    /// Saves the raw JPN files for the parity fixture. Also needs MYKAD_RECORD set to a folder outside the repo.
+    /// <c>tools/parity/make_fixture.py</c> then replaces the personal data.
+    /// </summary>
+    [Fact]
+    public void RecordsTheJpnFiles()
+    {
+        var folder = Environment.GetEnvironmentVariable("MYKAD_RECORD");
+        Assert.SkipUnless(HardwareEnabled && !string.IsNullOrEmpty(folder), "Set MYKAD_HARDWARE=1 and MYKAD_RECORD=<folder> with a reader and a MyKad.");
+        folder = Path.GetFullPath(folder!);
+        var repo = RepoRoot();
+        Assert.False(
+            (folder + Path.DirectorySeparatorChar).StartsWith(repo + Path.DirectorySeparatorChar, StringComparison.Ordinal),
+            "MYKAD_RECORD must be outside the repo. The raw files hold real card data.");
+        Directory.CreateDirectory(folder);
+        using var reader = new PcscReader();
+
+        using var session = reader.Connect(TestContext.Current.CancellationToken);
+        MyKadCard.SelectJpn(session);
+        foreach (var file in new[] { JpnFile.Identity, JpnFile.Address, JpnFile.Portrait })
+        {
+            var data = MyKadCard.ReadFile(session, file);
+            File.WriteAllBytes(Path.Combine(folder, $"{file.Name.ToLowerInvariant()}.bin"), data);
+            Array.Clear(data);
+        }
+    }
+
     [Fact]
     public void StatusWorksWhileAReadIsOpen()
     {
@@ -47,5 +74,16 @@ public class PcscReaderHardwareTests
         using var session = reader.Connect(TestContext.Current.CancellationToken);
 
         Assert.True(reader.GetStatus().CardPresent);
+    }
+
+    private static string RepoRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "EstatellMyKadReader.slnx")))
+        {
+            dir = dir.Parent;
+        }
+
+        return dir?.FullName ?? throw new InvalidOperationException("No EstatellMyKadReader.slnx above the test folder.");
     }
 }

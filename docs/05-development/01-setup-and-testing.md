@@ -67,7 +67,24 @@ MYKAD_HARDWARE=1 dotnet test --project tests/Estatell.MyKad.Tests
 
 ## Recording fixtures
 
-`--record <folder>` (debug builds only) saves the raw responses of one read. Replace the name, IC, address and portrait before committing.
+`--record <folder>` (debug builds only, planned with the bridge) saves the raw responses of one read. Replace the name, IC, address and portrait before committing.
+
+### Recording the parity fixture
+
+1. With the reader and a MyKad plugged in, save the raw JPN files to a folder **outside** the repo. The test refuses a folder inside it.
+
+   ```
+   MYKAD_HARDWARE=1 MYKAD_RECORD=~/mykad-raw dotnet test --project tests/Estatell.MyKad.Tests --filter-method "*RecordsTheJpnFiles"
+   ```
+
+2. Clean the files and run the Python bridge's decoder on them. The script needs the `estatell` repo next to this one (or `--bridge <folder>`), but not pyscard.
+
+   ```
+   python3 tools/parity/make_fixture.py ~/mykad-raw
+   ```
+
+   It replaces each personal field with made-up values of the same shape, keeps the padding, and turns any other unknown byte into `X`. It stops without saving if a word of the card's text is still there.
+3. Check the hex dumps (`xxd tests/Estatell.MyKad.Tests/fixtures/parity/jpn1-1.bin`) and `python.json`, then delete `~/mykad-raw`.
 
 ## Hardware checks
 
