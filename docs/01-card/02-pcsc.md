@@ -40,6 +40,7 @@ The M0 spike (`spikes/PcscAot/`, run on 30 Oct 2026):
 
 - Windows results come from the `spike-pcsc-aot` workflow on `windows-latest`. Download the `.exe` from its run to try a read on a Windows PC.
 - `IL2075` is safe to suppress. The method only turns an error code into text, and it falls back to "Error code: …" when the description is trimmed away.
+- The bridge suppresses `IL2104`, the one-line summary that the trimmer prints for `PCSC` because the package is not marked trimmable. Our own projects still warn in full. Check a new package with `-p:TrimmerSingleWarn=false`.
 - Connecting with `SCardProtocol.Any` to a freshly inserted card fails with `SCARD_W_UNRESPONSIVE_CARD` on macOS. `T0` works. See [Rules](#rules).
 
 ## Own bindings (fallback)

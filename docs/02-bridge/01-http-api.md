@@ -37,6 +37,7 @@ Every route runs the Host and Origin checks first. See [Security](02-security.md
 
 - `online`, `version`, `reader_connected`, `reader_name` and `card_present` keep their 1.x names, so a 1.x Estatell page still shows the status.
 - `device_id` is random, made on first start, and public. It names the computer, not a secret.
+- Until the pairing file exists, `device_id` is kept in memory and changes on each start, and `paired` is always `false`.
 - `property_name` is for display only. It is `null` when not connected.
 - The 1.x `message` field is removed. Estatell writes its own wording.
 

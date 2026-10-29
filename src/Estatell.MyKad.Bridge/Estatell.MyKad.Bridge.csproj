@@ -5,7 +5,14 @@
     <RootNamespace>Estatell.MyKad.Bridge</RootNamespace>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- PCSC is not marked trimmable, so its warnings fold into one IL2104. The only one is IL2075 in
+         SCardHelper.GetAttrDesc, which is safe (see docs/01-card/02-pcsc.md). Our projects still warn in full.
+         Check a new package with -p:TrimmerSingleWarn=false. -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Estatell.MyKad.Bridge.Tests" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estatell.MyKad\Estatell.MyKad.csproj" />
   </ItemGroup>
