@@ -45,4 +45,5 @@ internal sealed record BridgeError(bool Success, string Code, string Error);
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [JsonSerializable(typeof(BridgeStatus))]
 [JsonSerializable(typeof(BridgeError))]
+[JsonSerializable(typeof(ReadResponse))]
 internal sealed partial class BridgeJson : JsonSerializerContext;

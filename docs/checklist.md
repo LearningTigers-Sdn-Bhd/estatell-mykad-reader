@@ -46,7 +46,7 @@ Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md)
 - [x] `feat(bridge): track when an Estatell page was last seen` — store the time and host of the last request with an allowed `Origin`, "connected" for 10 seconds after it. Tests with a fake clock: allowed, refused and no-`Origin` requests. Needs: remove the pairing fields. Docs: [Menu](02-bridge/04-tray.md#menu).
 - [ ] `feat(tray): show the status in the macOS menu bar` — `ITray`, the macOS version from the spike (`NSStatusItem`) and a no-op one, the status, reader, card and Estatell lines, the icons, **Help**, **Restart MyKad Reader**, `--no-tray`. Needs: the tray spike (Mac half), run as a single instance, track when an Estatell page was last seen. Docs: [Tray](02-bridge/04-tray.md).
 - [ ] `feat(tray): show the status in the Windows tray` — the `Shell_NotifyIcon` version from the spike, `WinExe` with `AllocConsole` for `--foreground`. Needs: the macOS tray item, the tray spike (Windows half). Docs: [Tray](02-bridge/04-tray.md#windows).
-- [ ] `feat(bridge): read the card` — `GET`/`POST /read`, `403` without an allowed `Origin`, the error `code` table, the 10-second read timeout and `409 busy`, and a test that a read writes no card field to the log. Needs: remove the pairing fields, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
+- [x] `feat(bridge): read the card` — `GET`/`POST /read`, `403` without an allowed `Origin`, the error `code` table, the 10-second read timeout and `409 busy`, and a test that a read writes no card field to the log. Needs: remove the pairing fields, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
 
 ### M2: Estatell side
 
@@ -99,3 +99,4 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `6e00b63` | `fix(bridge): allow dev origins in debug builds only` |
 | `1438b4d` | `docs: split the tray item and add a Done row` |
 | `12fbdaa` | `feat(bridge): track when an Estatell page was last seen` |
+| `8b3d75f` | `feat(bridge): log to a rotating file without card data` |

@@ -11,15 +11,17 @@ namespace Estatell.MyKad.Bridge.Tests;
 /// </summary>
 internal sealed class BridgeFactory : WebApplicationFactory<Program>
 {
-    private readonly FakeReader _reader;
+    private readonly IReader _reader;
+    private readonly TimeSpan? _readTimeout;
     private readonly OriginPolicy? _policy;
     private readonly TimeProvider? _clock;
     private readonly string _logDirectory = Path.Combine(Path.GetTempPath(), $"mykad-bridge-tests-{Guid.NewGuid():N}");
 
-    public BridgeFactory(FakeReader reader, OriginPolicy? policy = null, TimeProvider? clock = null)
+    public BridgeFactory(IReader reader, OriginPolicy? policy = null, TimeProvider? clock = null, TimeSpan? readTimeout = null)
     {
         _reader = reader;
         _clock = clock;
+        _readTimeout = readTimeout;
         _policy = policy;
         ClientOptions.BaseAddress = new Uri("http://127.0.0.1:9292");
     }
@@ -41,6 +43,11 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
         {
             services.AddSingleton<IReader>(_reader);
             services.AddSingleton(new LogFileOptions(LogPath));
+            if (_readTimeout is { } timeout)
+            {
+                services.AddSingleton(new ReadOptions(timeout));
+            }
+
             if (_clock is not null)
             {
                 services.AddSingleton(_clock);

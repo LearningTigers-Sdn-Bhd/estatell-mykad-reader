@@ -22,6 +22,7 @@ builder.Services.ConfigureHttpJsonOptions(json =>
 builder.Services.AddSingleton<IReader, PcscReader>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<EstatellPresence>();
+builder.Services.AddSingleton(ReadOptions.Default);
 builder.Services.AddSingleton(_ => new OriginPolicy(
     Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable),
 #if DEBUG
@@ -74,6 +75,7 @@ StartupLog.Started(startupLogger, BridgeInfo.Version);
 app.MapGet("/status", StatusRoute.Get);
 app.MapGet("/", StatusRoute.Get);
 app.MapGet("/health", StatusRoute.Get);
+app.MapMethods("/read", ["GET", "POST"], ReadRoute.Handle);
 
 app.Run();
 

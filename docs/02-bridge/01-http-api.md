@@ -60,6 +60,8 @@ Failure:
 | 409  | `busy`          | Another read did not finish in 10 seconds    |
 | 500  | `read_failed`   | A card step failed                           |
 
+- `busy` is a read that waited 10 seconds for the reader. A read that starts but runs past 10 seconds ends as `read_failed`.
+- `/read` runs the card on its own thread and logs only its outcome (`Read ok in N ms.` or `Read failed: reason.`), never a field.
 - Estatell shows its own wording from `code`. `error` is a plain English sentence for logs and developers. It never holds card data.
 - 1.x had no `code`. The hook falls back to `error` for 1.x bridges.
 
