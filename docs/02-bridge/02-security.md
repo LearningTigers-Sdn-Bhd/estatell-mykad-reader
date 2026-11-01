@@ -81,4 +81,7 @@ A refused origin gets `403` with `code: forbidden` and no CORS headers.
 
 - On Windows the socket uses `SO_EXCLUSIVEADDRUSE`, so two copies cannot share the port.
 - A second copy for the same user exits with code 0. launchd does not restart a clean exit.
+- macOS holds an exclusive lock on `~/Library/Application Support/Estatell/mykad-bridge.lock`. The system drops the lock when the process ends, so a crash leaves no stale lock. If the lock file cannot be created, the copy starts without a lock.
+- Before it serves, a copy checks that the port is free. If not, it logs a warning and checks every 30 seconds. It cannot be stopped during that wait until the tray item adds the signal handling.
+- The Windows lock (a `Local\` mutex) and `SO_EXCLUSIVEADDRUSE` come with the Windows item.
 - A copy for another user keeps its tray and waits for the port. See [More than one user](04-tray.md#more-than-one-user).

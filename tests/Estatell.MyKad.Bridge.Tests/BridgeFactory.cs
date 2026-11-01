@@ -43,6 +43,7 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
         {
             services.AddSingleton<IReader>(_reader);
             services.AddSingleton(new LogFileOptions(LogPath));
+            services.AddSingleton<IInstanceGuard>(new FreeGuard());
             if (_readTimeout is { } timeout)
             {
                 services.AddSingleton(new ReadOptions(timeout));
@@ -58,4 +59,16 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
                 services.AddSingleton(_policy);
             }
         });
+
+    /// <summary>Never takes the real lock file or probes the real port.</summary>
+    private sealed class FreeGuard : IInstanceGuard
+    {
+        public bool TryAcquire() => true;
+
+        public bool IsPortFree() => true;
+
+        public void Dispose()
+        {
+        }
+    }
 }

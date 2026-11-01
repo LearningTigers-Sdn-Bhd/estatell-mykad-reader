@@ -23,6 +23,7 @@ builder.Services.AddSingleton<IReader, PcscReader>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<EstatellPresence>();
 builder.Services.AddSingleton(ReadOptions.Default);
+builder.Services.AddSingleton<IInstanceGuard>(_ => new InstanceGuard(InstanceGuard.DefaultLockPath(), BridgeInfo.Port));
 builder.Services.AddSingleton(_ => new OriginPolicy(
     Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable),
 #if DEBUG
@@ -69,20 +70,32 @@ foreach (var skipped in policy.Skipped)
 
 app.Use((context, next) => RequestChecks.InvokeAsync(context, next, policy, presence, checksLogger));
 
-var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Bridge");
-StartupLog.Started(startupLogger, BridgeInfo.Version);
-
 app.MapGet("/status", StatusRoute.Get);
 app.MapGet("/", StatusRoute.Get);
 app.MapGet("/health", StatusRoute.Get);
 app.MapMethods("/read", ["GET", "POST"], ReadRoute.Handle);
 
+// A second copy of the same user exits with 0, so launchd does not restart it.
+// A copy of another user waits for the port. The tray (its own item) shows that wait.
+var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Bridge");
+var guard = app.Services.GetRequiredService<IInstanceGuard>();
+if (!guard.TryAcquire())
+{
+    StartupLog.AlreadyRunning(startupLogger);
+    return;
+}
+
+await StartupGate.WaitForPortAsync(guard, TimeSpan.FromSeconds(30), startupLogger, CancellationToken.None);
+StartupLog.Started(startupLogger, BridgeInfo.Version);
 app.Run();
 
 public partial class Program;
 
 internal static partial class StartupLog
 {
+    [LoggerMessage(Level = LogLevel.Information, Message = "MyKad Reader is already running for this user. Exiting.")]
+    public static partial void AlreadyRunning(ILogger logger);
+
     [LoggerMessage(Level = LogLevel.Information, Message = "MyKad Reader {Version} started.")]
     public static partial void Started(ILogger logger, string version);
 
