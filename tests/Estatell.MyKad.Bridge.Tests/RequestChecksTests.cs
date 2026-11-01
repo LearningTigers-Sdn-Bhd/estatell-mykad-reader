@@ -125,7 +125,7 @@ public class RequestChecksTests
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(["https://app.estatell.com"], response.Headers.GetValues("Access-Control-Allow-Origin"));
         Assert.Equal(["GET, POST, OPTIONS"], response.Headers.GetValues("Access-Control-Allow-Methods"));
-        Assert.Equal(["Authorization, Content-Type"], response.Headers.GetValues("Access-Control-Allow-Headers"));
+        Assert.Equal(["Content-Type"], response.Headers.GetValues("Access-Control-Allow-Headers"));
         Assert.Equal(["600"], response.Headers.GetValues("Access-Control-Max-Age"));
         Assert.Equal(["true"], response.Headers.GetValues("Access-Control-Allow-Private-Network"));
     }
@@ -162,7 +162,7 @@ public class RequestChecksTests
         var request = new HttpRequestMessage(HttpMethod.Options, "/read");
         request.Headers.Add("Origin", origin);
         request.Headers.Add("Access-Control-Request-Method", "GET");
-        request.Headers.Add("Access-Control-Request-Headers", "authorization");
+        request.Headers.Add("Access-Control-Request-Headers", "content-type");
         return request;
     }
 

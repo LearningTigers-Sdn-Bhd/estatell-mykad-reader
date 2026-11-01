@@ -20,7 +20,6 @@ builder.Services.ConfigureHttpJsonOptions(json =>
     json.SerializerOptions.TypeInfoResolverChain.Insert(0, BridgeJson.Default);
 });
 builder.Services.AddSingleton<IReader, PcscReader>();
-builder.Services.AddSingleton<IConnectionState, MemoryConnectionState>();
 builder.Services.AddSingleton(_ => new OriginPolicy(Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable)));
 
 if (!options.Foreground)

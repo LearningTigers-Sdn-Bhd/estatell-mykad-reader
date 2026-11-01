@@ -6,7 +6,7 @@ namespace Estatell.MyKad.Bridge;
 internal static partial class StatusRoute
 {
     /// <summary>Never touches the card. A failed status check reads as no reader.</summary>
-    public static BridgeStatus Get(IReader reader, IConnectionState connection, ILogger<BridgeStatus> logger)
+    public static BridgeStatus Get(IReader reader, ILogger<BridgeStatus> logger)
     {
         ReaderStatus status;
         try
@@ -22,9 +22,6 @@ internal static partial class StatusRoute
         return new BridgeStatus(
             Online: true,
             Version: BridgeInfo.Version,
-            DeviceId: connection.DeviceId,
-            Paired: connection.Paired,
-            PropertyName: connection.PropertyName,
             ReaderConnected: status.ReaderName is not null,
             ReaderName: status.ReaderName,
             CardPresent: status.CardPresent);
@@ -38,9 +35,6 @@ internal static partial class StatusRoute
 internal sealed record BridgeStatus(
     bool Online,
     string Version,
-    string DeviceId,
-    bool Paired,
-    string? PropertyName,
     bool ReaderConnected,
     string? ReaderName,
     bool CardPresent);

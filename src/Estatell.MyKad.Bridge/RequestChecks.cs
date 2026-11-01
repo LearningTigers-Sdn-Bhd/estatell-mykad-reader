@@ -45,7 +45,7 @@ internal static partial class RequestChecks
             if (!StringValues.IsNullOrEmpty(origin))
             {
                 response.Headers.AccessControlAllowMethods = "GET, POST, OPTIONS";
-                response.Headers.AccessControlAllowHeaders = "Authorization, Content-Type";
+                response.Headers.AccessControlAllowHeaders = "Content-Type";
                 response.Headers.AccessControlMaxAge = "600";
 
                 // Chrome's Private Network Access: an HTTPS page asks before it calls 127.0.0.1.
