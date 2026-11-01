@@ -80,7 +80,7 @@ public class RequestChecksTests
     [InlineData("https://pms.example.com")]
     public async Task AllowsKnownOrigins(string origin)
     {
-        using var factory = new BridgeFactory(new FakeReader(), new OriginPolicy("https://pms.example.com"));
+        using var factory = new BridgeFactory(new FakeReader(), new OriginPolicy("https://pms.example.com", allowDevelopmentHosts: true));
         using var client = factory.CreateClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, "/status");
         request.Headers.Add("Origin", origin);

@@ -1,8 +1,9 @@
 namespace Estatell.MyKad.Bridge;
 
 /// <summary>
-/// Which web pages may call the bridge: the Estatell sites, local development hosts
-/// (<c>localhost</c>, <c>127.0.0.1</c>, <c>*.test</c>, any port) and the origins in <c>ESTATELL_BRIDGE_ORIGINS</c>.
+/// Which web pages may call the bridge: the Estatell sites and the origins in <c>ESTATELL_BRIDGE_ORIGINS</c>.
+/// Debug builds also allow local development hosts (<c>localhost</c>, <c>127.0.0.1</c>, <c>*.test</c>, any port).
+/// A release build allows them only when the variable lists them, because no token stands behind the Origin check.
 /// </summary>
 internal sealed class OriginPolicy
 {
@@ -11,10 +12,13 @@ internal sealed class OriginPolicy
     private static readonly string[] _estatell = ["https://app.estatell.com", "https://demo.estatell.com"];
 
     private readonly HashSet<string> _exact = new(StringComparer.OrdinalIgnoreCase);
+    private readonly bool _allowDevelopmentHosts;
 
     /// <param name="extraOrigins">Comma-separated origins, as in <see cref="EnvironmentVariable"/>.</param>
-    public OriginPolicy(string? extraOrigins = null)
+    /// <param name="allowDevelopmentHosts">True in Debug builds. <c>Program.cs</c> sets it from <c>#if DEBUG</c>.</param>
+    public OriginPolicy(string? extraOrigins = null, bool allowDevelopmentHosts = false)
     {
+        _allowDevelopmentHosts = allowDevelopmentHosts;
         foreach (var origin in _estatell)
         {
             _exact.Add(origin);
@@ -49,6 +53,11 @@ internal sealed class OriginPolicy
         if (_exact.Contains(normalized))
         {
             return true;
+        }
+
+        if (!_allowDevelopmentHosts)
+        {
+            return false;
         }
 
         // Uri lowercases the host, and a look-alike such as foo.test.evil.com does not end in .test.
