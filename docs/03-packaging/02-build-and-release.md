@@ -22,7 +22,8 @@ Each runner starts the built app with `--no-tray` and checks:
 - `GET /status` returns `version` equal to the tag.
 - A foreign `Origin` gets `403`.
 - A wrong `Host` gets `403`.
-- `/read` without a token gets `401`.
+- `/read` with no `Origin` gets `403`.
+- A dev `Origin` (`http://estatell.test`) gets `403` in the release build.
 
 ## Release
 
@@ -45,7 +46,7 @@ https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/
 
 - Semantic versions. A change Estatell needs is a minor or major bump.
 - When Estatell needs a new build, bump `REQUIRED_BRIDGE_VERSION` in `estatell/resources/js/hooks/use-mykad-reader.ts` in the same Estatell release.
-- 2.0.0 is a major bump: `/read` needs a token.
+- 2.0.0 is a major bump: a new app with a tray, an error `code`, no `message`, and `/read` needs an allowed `Origin`.
 
 ## Licences
 

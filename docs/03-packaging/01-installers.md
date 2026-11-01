@@ -21,10 +21,9 @@ File names stay the same as 1.x.
 | Shown as     | **MyKad Reader** in Settings → Apps, publisher Estatell                                |
 | Start        | `HKLM\Software\Microsoft\Windows\CurrentVersion\Run\EstatellMyKadBridge`, every user at login. The binary is `WinExe`, so no console window opens |
 | Tray         | Windows hides new tray icons under **^** at first. The user docs show how to find it   |
-| Data folder  | `%ProgramData%\Estatell\MyKadReader\`, Users group can modify                          |
 | Admin prompt | Once                                                                                  |
 | Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs                                       |
-| Uninstall    | Settings → Apps → MyKad Reader. Keeps the data folder, so a reinstall stays connected  |
+| Uninstall    | Settings → Apps → MyKad Reader                                                        |
 
 Why a Run key and not a Windows service: a service runs in session 0, where card readers are harder to reach and debug. The Run key runs in the user's session, where the reader works.
 
@@ -35,7 +34,6 @@ Why a Run key and not a Windows service: a service runs in session 0, where card
 | Install to   | `/Library/Application Support/Estatell/MyKadBridge/` (same as 1.x)                           |
 | App bundle   | `MyKad Reader.app` in the install folder, binary in `Contents/MacOS/mykad-bridge`. `Info.plist` sets `LSUIElement` (menu bar only, no Dock icon) |
 | Start        | `/Library/LaunchAgents/com.estatell.mykad-bridge.plist`, `RunAtLoad`, `KeepAlive` on crash, `LimitLoadToSessionType` `Aqua` (only in a desktop session, where the menu bar exists) |
-| Data folder  | `/Library/Application Support/Estatell/MyKadReader/`, group `staff`, mode `0770`             |
 | Admin prompt | Mac password once                                                                           |
 | Binary       | Universal (arm64 and x64, joined with `lipo`)                                               |
 | Uninstall    | **Uninstall MyKad Reader.app** in `/Applications/Estatell/`. Asks for the Mac password once  |
@@ -67,8 +65,8 @@ Run before each release, on a real x64 Windows 10 PC and a Mac on macOS 15:
 - [ ] Reader works with no driver installed.
 - [ ] Starts at login for a second user account.
 - [ ] The tray icon and menu show on Windows (light and dark taskbar) and in the Mac menu bar (light and dark).
-- [ ] Connects with the code from the tray. A wrong code is refused, and 5 wrong codes lock until **New connect code**.
+- [ ] With check-in open in Estatell, the menu shows **Estatell: connected · app.estatell.com**, and **not seen** about 10 seconds after the tab closes.
+- [ ] A card fills the guest form.
 - [ ] With two users logged in, the second shows "MyKad Reader is open for another user".
 - [ ] Installs over 1.1.0 (Python) and over the previous 2.x.
-- [ ] Stays connected after an upgrade.
 - [ ] Uninstall removes the app and the start entry.

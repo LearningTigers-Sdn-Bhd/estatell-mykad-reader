@@ -2,44 +2,43 @@
 
 ## Purpose
 
-Show staff that MyKad Reader is running, and show the admin the connect code. The icon sits in the Windows tray and the macOS menu bar. MyKad Reader has no window.
+Show staff that MyKad Reader is running, that the card reader is plugged in, and that an Estatell page is talking to it. The icon sits in the Windows tray and the macOS menu bar. MyKad Reader has no window.
 
 ## Menu
 
 ```
  MyKad Reader 2.0.0
- ● Ready · Hotel Seri Kota
+ ● Ready
  ───────────────────────────
- Connect code: 482-917            (only while not connected)
+ Card reader: ACS ACR39U
+ Card: none
+ Estatell: connected · app.estatell.com
  ───────────────────────────
- Open MyKad Reader settings
  Help
  Restart MyKad Reader
 ```
 
+| Line         | Values                                                                 | From                         |
+| ------------ | ---------------------------------------------------------------------- | ---------------------------- |
+| Status       | See the table below                                                    | All of the lines below       |
+| Card reader  | The reader name, or **not found**                                      | `reader_name` in `/status`   |
+| Card         | **inserted** or **none**                                               | `card_present` in `/status`  |
+| Estatell     | **connected · {host}** or **not seen**                                 | The last request with an allowed `Origin` |
+
 | Status line                                   | Shown when                                   | Icon      |
 | --------------------------------------------- | -------------------------------------------- | --------- |
-| ● Ready · {hotel}                             | Connected, reader plugged in                 | Normal    |
+| ● Ready                                       | Reader plugged in                            | Normal    |
 | ○ Plug in the card reader                     | No reader                                    | Grey      |
-| ○ Not connected to a hotel yet                | `paired: false`                              | Grey      |
 | ○ MyKad Reader is open for another user       | Another user on this computer runs it        | Grey      |
 
-- **Open MyKad Reader settings** opens **Settings → MyKad Reader** in Estatell in the default browser.
+- **Estatell: connected** means a request with an allowed `Origin` came in during the last 10 seconds. The check-in page polls `/status` every 2.5 seconds, so the line turns on within a few seconds of opening it, and turns to **not seen** 10 seconds after the page closes. `{host}` is the host of that `Origin`, for example `app.estatell.com` or `demo.estatell.com`.
+- **not seen** is not an error. It only means no Estatell page with the MyKad box is open on this computer now. It does not change the icon.
+- The menu refreshes each time it opens (`menuWillOpen:` on macOS, before `TrackPopupMenu` on Windows). The icon refreshes when the reader is plugged in or out.
 - **Help** opens the `set-up-mykad-reader` user docs page.
 - **Restart MyKad Reader** stops the server and starts it again.
 - There is no **Quit**. Quitting would stop check-in without a warning.
-- The menu never shows card data, the token or `device_id`.
-- Words follow [Words on screen](../04-estatell/01-settings-page.md#words-on-screen).
-
-## Connect code
-
-The code stops other programs on the computer from connecting it to a hotel first. See [Connecting](03-connecting.md).
-
-- 6 digits, shown as `482-917`. Made at random when MyKad Reader starts while not connected, and again after each disconnect.
-- Kept in memory only. Never written to disk, to the log or to `/status`.
-- `/pair` needs it. It is compared in constant time.
-- After 5 wrong codes, `/pair` is locked. The menu then shows **New connect code**, which makes a new code and unlocks `/pair`. A restart does the same.
-- Cleared when the computer connects.
+- The menu never shows card data.
+- Words follow [Words on screen](../04-estatell/01-check-in-chip.md#words-on-screen).
 
 ## Windows
 

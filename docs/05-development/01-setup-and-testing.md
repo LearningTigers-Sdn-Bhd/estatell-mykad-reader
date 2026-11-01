@@ -56,7 +56,7 @@ Estatell on `*.test` or `localhost` is an allowed origin, so a local Estatell ca
 | Project                         | Covers                                                                          |
 | ------------------------------- | ------------------------------------------------------------------------------- |
 | `Estatell.MyKad.Tests`          | Each field, BCD dates and postcodes, state mapping, bad status words, parity with the Python bridge. Uses `FakeReader` |
-| `Estatell.MyKad.Bridge.Tests`   | Each route, each `code`, Host and Origin checks, token checks, `/pair` rules, CORS and PNA headers. Uses `WebApplicationFactory` with `FakeReader` |
+| `Estatell.MyKad.Bridge.Tests`   | Each route, each `code`, Host and Origin checks, `/read` with no `Origin`, the Estatell seen time, CORS and PNA headers. Uses `WebApplicationFactory` with `FakeReader` |
 
 - No test needs a real reader, except the hardware tests. They are skipped unless `MYKAD_HARDWARE=1` is set, with a reader and a MyKad plugged in:
 
