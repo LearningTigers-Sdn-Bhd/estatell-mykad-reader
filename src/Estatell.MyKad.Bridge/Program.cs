@@ -20,6 +20,8 @@ builder.Services.ConfigureHttpJsonOptions(json =>
     json.SerializerOptions.TypeInfoResolverChain.Insert(0, BridgeJson.Default);
 });
 builder.Services.AddSingleton<IReader, PcscReader>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<EstatellPresence>();
 builder.Services.AddSingleton(_ => new OriginPolicy(
     Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable),
 #if DEBUG
@@ -49,13 +51,14 @@ app.Use((context, next) =>
 });
 
 var policy = app.Services.GetRequiredService<OriginPolicy>();
+var presence = app.Services.GetRequiredService<EstatellPresence>();
 var checksLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(RequestChecks).FullName!);
 foreach (var skipped in policy.Skipped)
 {
     StartupLog.SkippedOrigin(checksLogger, skipped, OriginPolicy.EnvironmentVariable);
 }
 
-app.Use((context, next) => RequestChecks.InvokeAsync(context, next, policy, checksLogger));
+app.Use((context, next) => RequestChecks.InvokeAsync(context, next, policy, presence, checksLogger));
 
 app.MapGet("/status", StatusRoute.Get);
 app.MapGet("/", StatusRoute.Get);

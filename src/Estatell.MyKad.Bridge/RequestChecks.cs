@@ -10,7 +10,7 @@ internal static partial class RequestChecks
 {
     private static readonly string[] _hosts = [$"127.0.0.1:{BridgeInfo.Port}", $"localhost:{BridgeInfo.Port}"];
 
-    public static async Task InvokeAsync(HttpContext context, RequestDelegate next, OriginPolicy policy, ILogger logger)
+    public static async Task InvokeAsync(HttpContext context, RequestDelegate next, OriginPolicy policy, EstatellPresence presence, ILogger logger)
     {
         var request = context.Request;
         var response = context.Response;
@@ -36,6 +36,7 @@ internal static partial class RequestChecks
                 return;
             }
 
+            presence.Record(text);
             response.Headers.AccessControlAllowOrigin = origin;
             response.Headers.Vary = "Origin";
         }

@@ -13,10 +13,12 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
 {
     private readonly FakeReader _reader;
     private readonly OriginPolicy? _policy;
+    private readonly TimeProvider? _clock;
 
-    public BridgeFactory(FakeReader reader, OriginPolicy? policy = null)
+    public BridgeFactory(FakeReader reader, OriginPolicy? policy = null, TimeProvider? clock = null)
     {
         _reader = reader;
+        _clock = clock;
         _policy = policy;
         ClientOptions.BaseAddress = new Uri("http://127.0.0.1:9292");
     }
@@ -25,6 +27,11 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<IReader>(_reader);
+            if (_clock is not null)
+            {
+                services.AddSingleton(_clock);
+            }
+
             if (_policy is not null)
             {
                 services.AddSingleton(_policy);
