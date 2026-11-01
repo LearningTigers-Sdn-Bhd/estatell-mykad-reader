@@ -32,9 +32,13 @@ builder.Services.AddSingleton(_ => new OriginPolicy(
 
 if (!options.Foreground)
 {
-    // The file log comes with its own item. Until then the background run is silent.
     builder.Logging.ClearProviders();
 }
+
+// The file log is always on. --foreground adds the console, --verbose adds Debug lines.
+builder.Services.AddSingleton(new LogFileOptions(LogFileOptions.Default()));
+builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
 
 if (options.Verbose)
 {
@@ -43,12 +47,16 @@ if (options.Verbose)
 
 var app = builder.Build();
 
+var requestLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Requests");
+
 app.Use((context, next) =>
 {
     context.Response.Headers.CacheControl = "no-store";
     context.Response.Headers.Connection = "close";
     return next(context);
 });
+
+app.Use((context, next) => RequestLog.InvokeAsync(context, next, requestLogger));
 
 var policy = app.Services.GetRequiredService<OriginPolicy>();
 var presence = app.Services.GetRequiredService<EstatellPresence>();
@@ -60,6 +68,9 @@ foreach (var skipped in policy.Skipped)
 
 app.Use((context, next) => RequestChecks.InvokeAsync(context, next, policy, presence, checksLogger));
 
+var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Bridge");
+StartupLog.Started(startupLogger, BridgeInfo.Version);
+
 app.MapGet("/status", StatusRoute.Get);
 app.MapGet("/", StatusRoute.Get);
 app.MapGet("/health", StatusRoute.Get);
@@ -70,6 +81,9 @@ public partial class Program;
 
 internal static partial class StartupLog
 {
+    [LoggerMessage(Level = LogLevel.Information, Message = "MyKad Reader {Version} started.")]
+    public static partial void Started(ILogger logger, string version);
+
     [LoggerMessage(Level = LogLevel.Warning, Message = "Skipped '{Origin}' in {Variable}. Use http(s)://host[:port].")]
     public static partial void SkippedOrigin(ILogger logger, string origin, string variable);
 }

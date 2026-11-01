@@ -41,12 +41,12 @@ Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md)
 - [x] `feat(bridge): refuse foreign hosts and origins` — the Host check, the origin allowlist with `ESTATELL_BRIDGE_ORIGINS` and the dev pattern, CORS and PNA preflight, `403` with `code: forbidden`. Tests for each allowed and refused case. Needs: serve status. Docs: [Checks](02-bridge/02-security.md#checks).
 - [x] `refactor(bridge): remove the pairing fields from status` — drop `device_id`, `paired` and `property_name` from `/status`, delete `IConnectionState` and `MemoryConnectionState`, drop `Authorization` from the preflight headers. Update the tests. Needs: refuse foreign hosts. Docs: [GET /status](02-bridge/01-http-api.md#get-status).
 - [x] `fix(bridge): allow dev origins in debug builds only` — `localhost`, `127.0.0.1` and `*.test` only when built in Debug; a release build allows them only through `ESTATELL_BRIDGE_ORIGINS`. Tests for both builds' rules. Needs: refuse foreign hosts. Docs: [Allowed origins](02-bridge/02-security.md#allowed-origins).
-- [ ] `feat(bridge): log to a rotating file without card data` — the 1.x paths, 1 MB plus 2 files, a test that a read writes no card field to the log. Needs: serve status. Docs: [Logs](02-bridge/02-security.md#logs).
+- [x] `feat(bridge): log to a rotating file without card data` — the 1.x paths, 1 MB plus 2 files, a test that a request writes no query or card field to the log. **macOS done. Open: the Windows path. The test that a read writes no card field moves to the read item.** Needs: serve status. Docs: [Logs](02-bridge/02-security.md#logs).
 - [ ] `feat(bridge): run as a single instance` — `SO_EXCLUSIVEADDRUSE` on Windows, the per-user lock, exit 0 for a second copy of the same user, wait for the port for another user. Needs: serve status. Docs: [Single instance](02-bridge/02-security.md#single-instance), [More than one user](02-bridge/04-tray.md#more-than-one-user).
 - [x] `feat(bridge): track when an Estatell page was last seen` — store the time and host of the last request with an allowed `Origin`, "connected" for 10 seconds after it. Tests with a fake clock: allowed, refused and no-`Origin` requests. Needs: remove the pairing fields. Docs: [Menu](02-bridge/04-tray.md#menu).
 - [ ] `feat(tray): show the status in the macOS menu bar` — `ITray`, the macOS version from the spike (`NSStatusItem`) and a no-op one, the status, reader, card and Estatell lines, the icons, **Help**, **Restart MyKad Reader**, `--no-tray`. Needs: the tray spike (Mac half), run as a single instance, track when an Estatell page was last seen. Docs: [Tray](02-bridge/04-tray.md).
 - [ ] `feat(tray): show the status in the Windows tray` — the `Shell_NotifyIcon` version from the spike, `WinExe` with `AllocConsole` for `--foreground`. Needs: the macOS tray item, the tray spike (Windows half). Docs: [Tray](02-bridge/04-tray.md#windows).
-- [ ] `feat(bridge): read the card` — `GET`/`POST /read`, `403` without an allowed `Origin`, the error `code` table, the 10-second read timeout and `409 busy`. Needs: remove the pairing fields, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
+- [ ] `feat(bridge): read the card` — `GET`/`POST /read`, `403` without an allowed `Origin`, the error `code` table, the 10-second read timeout and `409 busy`, and a test that a read writes no card field to the log. Needs: remove the pairing fields, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
 
 ### M2: Estatell side
 
@@ -98,3 +98,4 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `15aa768` | `refactor(bridge): remove the pairing fields from status` |
 | `6e00b63` | `fix(bridge): allow dev origins in debug builds only` |
 | `1438b4d` | `docs: split the tray item and add a Done row` |
+| `12fbdaa` | `feat(bridge): track when an Estatell page was last seen` |
