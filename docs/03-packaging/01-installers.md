@@ -40,6 +40,13 @@ Why a Run key and not a Windows service: a service runs in session 0, where card
 
 The 1.x `uninstall.sh` stays inside the install folder for support use. User docs never mention it.
 
+Build with `packaging/macos/build.sh [version]`. The result is `artifacts/macos/estatell-mykad.pkg`. The version defaults to the one in `Directory.Build.props`. An Apple Silicon Mac builds both architectures.
+
+- The package identifier stays `com.estatell.mykad-bridge`, so 2.0.0 upgrades the 1.x receipt.
+- Both app bundles are not relocatable. Otherwise macOS moves an upgrade to wherever it finds a copy with the same bundle id.
+- The bundles have an ad-hoc signature, because Apple Silicon runs only signed code. This is not a Developer ID signature, so the confirm step below still applies.
+- `packaging/THIRD-PARTY-NOTICES.txt` holds the `PCSC` licence and installs into the install folder.
+
 ## Upgrade
 
 - Opening a newer installer stops the running copy, replaces it and starts the new one.

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Stop a running copy so the new files can replace it, and remove the 1.x Python files.
+LABEL=com.estatell.mykad-bridge
+SUPPORT="/Library/Application Support/Estatell/MyKadBridge"
+for uid in $(ps -axo uid=,comm= | awk '/loginwindow/ {print $1}' | sort -u); do
+    launchctl bootout "gui/$uid/$LABEL" 2>/dev/null || true
+done
+pkill -f "Estatell/MyKadBridge/MyKad Reader.app/Contents/MacOS/mykad-bridge" 2>/dev/null || true
+pkill -f "Estatell/MyKadBridge/estatell-mykad-bridge" 2>/dev/null || true
+rm -rf "$SUPPORT/_internal" "$SUPPORT/estatell-mykad-bridge"
+exit 0
