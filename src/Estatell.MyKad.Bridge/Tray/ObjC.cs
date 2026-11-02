@@ -30,9 +30,6 @@ internal static partial class ObjC
     public static partial nint Send(nint receiver, nint sel, nint arg);
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
-    public static partial nint Send(nint receiver, nint sel, nint arg1, nint arg2);
-
-    [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
     public static partial nint Send(nint receiver, nint sel, nint arg, nuint length);
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
@@ -46,6 +43,13 @@ internal static partial class ObjC
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
     public static partial void Send(nint receiver, nint sel, NSSize arg);
+
+    // NSSize (two doubles, 16 bytes) comes back in registers on arm64 and x64, so objc_msgSend is right and objc_msgSend_stret is not needed.
+    [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
+    public static partial NSSize SendSize(nint receiver, nint sel);
+
+    [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
+    public static partial void Send(nint receiver, nint sel, NSPoint arg);
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
     public static partial nint SendEvent(nint receiver, nint sel, nint type, NSPoint location, nuint flags, double timestamp, nint window, nint context, short subtype, nint data1, nint data2);

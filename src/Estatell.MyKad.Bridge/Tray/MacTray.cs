@@ -12,6 +12,10 @@ internal sealed unsafe class MacTray : ITray
     private const nint ApplicationDefinedEvent = 15;
     private const double VariableLength = -1;
 
+    // Placement of the info lines. A normal menu row is about 22 pt high, and its text starts about 14 pt from the left edge. Set by eye.
+    private const double RowHeight = 22;
+    private const double TextInset = 14;
+
     // Plugging a reader in or out has no callback here, so the icon follows the status on a timer.
     private const double IconRefreshSeconds = 2;
 
@@ -23,9 +27,11 @@ internal sealed unsafe class MacTray : ITray
     private nint _target;
 
     private TrayActions _actions = null!;
-    private nint _readerItem;
-    private nint _estatellItem;
-    private nint _statusLineItem;
+    private readonly List<InfoRow> _infoRows = [];
+    private InfoRow _headerRow;
+    private InfoRow _statusLineRow;
+    private InfoRow _readerRow;
+    private InfoRow _estatellRow;
     private nint _statusButton;
     private nint _readyImage;
     private bool? _grey;
@@ -51,11 +57,11 @@ internal sealed unsafe class MacTray : ITray
         var target = Send(Send(CreateTargetClass(), Sel("alloc")), Sel("init"));
         var menu = New("NSMenu");
         Send(menu, Sel("setDelegate:"), target);
-        SetTitle(AddItem(menu, TrayMenuText.Header, 0, 0), TrayMenuText.Header);
-        _statusLineItem = AddItem(menu, "", 0, 0);
+        _headerRow = AddInfoRow(menu);
+        _statusLineRow = AddInfoRow(menu);
         AddSeparator(menu);
-        _readerItem = AddItem(menu, "", 0, 0);
-        _estatellItem = AddItem(menu, "", 0, 0);
+        _readerRow = AddInfoRow(menu);
+        _estatellRow = AddInfoRow(menu);
         AddSeparator(menu);
         AddItem(menu, TrayMenuText.Help, Sel("help:"), target);
         AddItem(menu, TrayMenuText.Restart, Sel("restart:"), target);
@@ -111,6 +117,7 @@ internal sealed unsafe class MacTray : ITray
         var cls = AllocateClassPair(Class("NSObject"), "EstatellMyKadTrayTarget", 0);
         AddMethod(cls, Sel("help:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnHelp, "v@:@");
         AddMethod(cls, Sel("restart:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnRestart, "v@:@");
+        AddMethod(cls, Sel("menuNeedsUpdate:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnMenuWillOpen, "v@:@");
         AddMethod(cls, Sel("menuWillOpen:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnMenuWillOpen, "v@:@");
         AddMethod(cls, Sel("refresh:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnRefresh, "v@:@");
         AddMethod(cls, Sel("stop:"), (nint)(delegate* unmanaged<nint, nint, nint, void>)&OnStop, "v@:@");
@@ -145,9 +152,11 @@ internal sealed unsafe class MacTray : ITray
     private void Refresh()
     {
         var status = _actions.Status();
-        SetTitle(_statusLineItem, TrayMenuText.MainLine(status));
-        SetTitle(_readerItem, TrayMenuText.ReaderLine(status));
-        SetTitle(_estatellItem, TrayMenuText.EstatellLine(status));
+        SetText(_headerRow, TrayMenuText.Header);
+        SetText(_statusLineRow, TrayMenuText.MainLine(status));
+        SetText(_readerRow, TrayMenuText.ReaderLine(status));
+        SetText(_estatellRow, TrayMenuText.EstatellLine(status));
+        LayoutRows();
 
         var grey = TrayMenuText.IconGrey(status.State);
         if (_grey != grey)
@@ -157,14 +166,57 @@ internal sealed unsafe class MacTray : ITray
         }
     }
 
-    // Items without an action are disabled, which draws them faint. An attributed title with the label colour keeps them readable.
-    private static void SetTitle(nint item, string title)
+    // A disabled item draws its text faint and ignores a text colour, so each info line is a label in a custom view.
+    // A view item with no action does not highlight and does nothing when clicked.
+    private InfoRow AddInfoRow(nint menu)
     {
-        var attributes = Send(Class("NSDictionary"), Sel("dictionaryWithObject:forKey:"), Send(Class("NSColor"), Sel("labelColor")), Str("NSColor"));
-        var attributed = Send(Send(Class("NSAttributedString"), Sel("alloc")), Sel("initWithString:attributes:"), Str(title), attributes);
-        Send(item, Sel("setAttributedTitle:"), attributed);
-        Send(attributed, Sel("release"));
+        var item = Send(Send(Class("NSMenuItem"), Sel("alloc")), Sel("initWithTitle:action:keyEquivalent:"), Str(""), 0, Str(""));
+        var view = New("NSView");
+        var label = Send(Class("NSTextField"), Sel("labelWithString:"), Str(""));
+        Send(label, Sel("setTextColor:"), Send(Class("NSColor"), Sel("labelColor")));
+        Send(label, Sel("setFont:"), Send(Class("NSFont"), Sel("menuFontOfSize:"), 0.0));
+        Send(view, Sel("addSubview:"), label);
+        Send(item, Sel("setView:"), view);
+        Send(menu, Sel("addItem:"), item);
+
+        var row = new InfoRow(item, view, label);
+        _infoRows.Add(row);
+        return row;
     }
+
+    private static void SetText(InfoRow row, string text)
+    {
+        Send(row.Label, Sel("setStringValue:"), Str(text));
+        Send(row.Label, Sel("sizeToFit"));
+        Send(row.Item, Sel("setTitle:"), Str(text));
+    }
+
+    // A custom view does not size the menu by itself: the menu is as wide as its widest view or item.
+    // So every row gets the width of the widest line, including the longest line there can be, and the labels are placed after that.
+    private void LayoutRows()
+    {
+        var widest = MeasureWidth(TrayMenuText.MainLine(new TrayStatus(TrayState.OtherUser, null, false, null)));
+        foreach (var row in _infoRows)
+        {
+            widest = Math.Max(widest, SendSize(row.Label, Sel("fittingSize")).Width);
+        }
+
+        foreach (var row in _infoRows)
+        {
+            var height = SendSize(row.Label, Sel("fittingSize")).Height;
+            Send(row.View, Sel("setFrameSize:"), new NSSize(widest + (2 * TextInset), RowHeight));
+            Send(row.Label, Sel("setFrameOrigin:"), new NSPoint(TextInset, Math.Round((RowHeight - height) / 2)));
+        }
+    }
+
+    private static double MeasureWidth(string text)
+    {
+        var scratch = Send(Class("NSTextField"), Sel("labelWithString:"), Str(text));
+        Send(scratch, Sel("setFont:"), Send(Class("NSFont"), Sel("menuFontOfSize:"), 0.0));
+        return SendSize(scratch, Sel("fittingSize")).Width;
+    }
+
+    private readonly record struct InfoRow(nint Item, nint View, nint Label);
 
     // An exception must not cross back into Objective-C.
     private static void Guard(Action action)
