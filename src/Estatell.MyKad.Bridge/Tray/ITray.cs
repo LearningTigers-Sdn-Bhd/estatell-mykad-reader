@@ -58,7 +58,6 @@ internal sealed class NoTray : ITray
 
 internal static class TrayChooser
 {
-    /// <summary>The Windows tray adds its branch here when its item lands.</summary>
     public static ITray Create(BridgeOptions options)
     {
         if (options.NoTray)
@@ -69,6 +68,11 @@ internal static class TrayChooser
         if (OperatingSystem.IsMacOS())
         {
             return new MacTray();
+        }
+
+        if (OperatingSystem.IsWindows())
+        {
+            return new WindowsTray();
         }
 
         return new NoTray();

@@ -10,6 +10,12 @@ if (options.Version)
     return 0;
 }
 
+// The Windows binary is WinExe, so it has no console of its own.
+if (options.Foreground && OperatingSystem.IsWindows())
+{
+    _ = Win32.AllocConsole();
+}
+
 using var server = new BridgeServer(() => BridgeApp.Build(options), TimeSpan.FromSeconds(30));
 
 // A second copy of the same user exits with 0, so launchd does not restart it.

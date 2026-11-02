@@ -38,6 +38,22 @@ public class InstanceGuardTests
     }
 
     [Fact]
+    public void OnlyTheFirstCopyTakesTheMutexUntilItEnds()
+    {
+        var name = $"EstatellMyKadTest{Guid.NewGuid():N}";
+        var first = new InstanceGuard(lockPath: null, port: 1, name);
+        using var second = new InstanceGuard(lockPath: null, port: 1, name);
+
+        Assert.True(first.TryAcquire());
+        Assert.True(first.TryAcquire());
+        Assert.False(second.TryAcquire());
+
+        first.Dispose();
+
+        Assert.True(second.TryAcquire());
+    }
+
+    [Fact]
     public void WithoutALockPathEveryCopyMayStart()
     {
         using var first = new InstanceGuard(lockPath: null, port: 1);

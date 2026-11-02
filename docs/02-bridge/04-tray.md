@@ -43,10 +43,11 @@ Show staff that MyKad Reader is running, that the card reader is plugged in, and
 
 ## Windows
 
-- `Shell_NotifyIcon` with a hidden top-level window, on its own thread with a message loop. Not a message-only window: those get no broadcasts, so they miss `TaskbarCreated` (add the icon again after Explorer restarts) and `WM_SETTINGCHANGE` (taskbar theme changed).
+- `Shell_NotifyIcon` with a hidden top-level window, on its own thread with a message loop. Not a message-only window: those get no broadcasts, so they miss `TaskbarCreated` (add the icon again after Explorer restarts).
 - Menu with `TrackPopupMenu`. Call `SetForegroundWindow` first, or the menu stays open when the user clicks elsewhere.
 - Calls use `LibraryImport`, so they work with Native AOT.
-- Icons are embedded `.ico` files, with light and dark versions for the taskbar theme.
+- Icons are two embedded `.ico` files, normal and grey. Each has one colour that shows on both light and dark taskbars, so the icon does not change with the taskbar theme. A timer reads `Status` every 2 seconds to follow the reader, as on macOS.
+- The info lines use `MF_DISABLED` without `MF_GRAYED`, so they read as normal text and cannot be clicked.
 - The binary is `WinExe`, so no console window opens at login. `--foreground` calls `AllocConsole` to print the log.
 
 ## macOS

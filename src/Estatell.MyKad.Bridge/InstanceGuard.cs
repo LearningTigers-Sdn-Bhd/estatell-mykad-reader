@@ -16,20 +16,29 @@ internal interface IInstanceGuard : IDisposable
 /// <summary>
 /// A lock file for the same user, held until the process ends, and a probe for the port.
 /// An exclusive <see cref="FileStream"/> takes an advisory lock on macOS, and the system drops it when the process dies,
-/// so a crash never leaves a stale lock.
+/// so a crash never leaves a stale lock. Windows uses a named mutex instead: the handle closes when the process ends.
 /// </summary>
-internal sealed class InstanceGuard(string? lockPath, int port) : IInstanceGuard
+internal sealed class InstanceGuard(string? lockPath, int port, string? mutexName = null) : IInstanceGuard
 {
     private FileStream? _lock;
+    private Mutex? _mutex;
 
-    /// <summary>The user's own folder, so one user's lock never blocks another. Other systems get none until their item lands.</summary>
+    /// <summary>The user's own folder, so one user's lock never blocks another. Windows uses <see cref="DefaultMutexName"/> instead.</summary>
     public static string? DefaultLockPath() =>
         OperatingSystem.IsMacOS() ? ForMac(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)) : null;
+
+    /// <summary><c>Local\</c> is one per logged-in session, so one user's copy never blocks another's.</summary>
+    public static string? DefaultMutexName() => OperatingSystem.IsWindows() ? @"Local\EstatellMyKadBridge" : null;
 
     public static string ForMac(string home) => Path.Combine(home, "Library", "Application Support", "Estatell", "mykad-bridge.lock");
 
     public bool TryAcquire()
     {
+        if (mutexName is not null)
+        {
+            return TryAcquireMutex(mutexName);
+        }
+
         if (lockPath is null || _lock is not null)
         {
             return true;
@@ -68,7 +77,30 @@ internal sealed class InstanceGuard(string? lockPath, int port) : IInstanceGuard
         }
     }
 
-    public void Dispose() => _lock?.Dispose();
+    public void Dispose()
+    {
+        _lock?.Dispose();
+        _mutex?.Dispose();
+    }
+
+    // Only whether the name is new matters, so nothing owns the mutex, and any thread can close it.
+    private bool TryAcquireMutex(string name)
+    {
+        if (_mutex is not null)
+        {
+            return true;
+        }
+
+        var mutex = new Mutex(initiallyOwned: false, name, out var createdNew);
+        if (!createdNew)
+        {
+            mutex.Dispose();
+            return false;
+        }
+
+        _mutex = mutex;
+        return true;
+    }
 }
 
 internal static partial class StartupGate

@@ -12,6 +12,12 @@ public class LogTests
         Assert.Equal("/Users/aina/Library/Logs/estatell-mykad-bridge.log", LogFileOptions.ForMac("/Users/aina"));
 
     [Fact]
+    public void TheWindowsPathIsInTheEstatellFolder() =>
+        Assert.Equal(
+            Path.Combine("local-app-data", "Estatell", "estatell-mykad-bridge.log"),
+            LogFileOptions.ForWindows("local-app-data"));
+
+    [Fact]
     public async Task RotatesAtTheSizeAndKeepsTwoOldFiles()
     {
         var directory = Directory.CreateTempSubdirectory("mykad-log-");

@@ -1,7 +1,9 @@
 using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 using Estatell.MyKad.Bridge.Tray;
 using Estatell.MyKad.Reader;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 
 namespace Estatell.MyKad.Bridge;
 
@@ -13,6 +15,7 @@ internal static partial class BridgeApp
         // No args to the builder: the flags are ours, not configuration keys.
         var builder = WebApplication.CreateSlimBuilder();
         builder.WebHost.ConfigureKestrel(kestrel => kestrel.Listen(IPAddress.Loopback, BridgeInfo.Port));
+        builder.WebHost.UseSockets(sockets => sockets.CreateBoundListenSocket = BindListenSocket);
         builder.Services.ConfigureHttpJsonOptions(json =>
         {
             // The web defaults ask for camel case, and they win over the context's own options.
@@ -25,7 +28,7 @@ internal static partial class BridgeApp
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<EstatellPresence>();
         builder.Services.AddSingleton(ReadOptions.Default);
-        builder.Services.AddSingleton<IInstanceGuard>(_ => new InstanceGuard(InstanceGuard.DefaultLockPath(), BridgeInfo.Port));
+        builder.Services.AddSingleton<IInstanceGuard>(_ => new InstanceGuard(InstanceGuard.DefaultLockPath(), BridgeInfo.Port, InstanceGuard.DefaultMutexName()));
         builder.Services.AddSingleton(_ => new OriginPolicy(
             Environment.GetEnvironmentVariable(OriginPolicy.EnvironmentVariable),
 #if DEBUG
@@ -78,6 +81,27 @@ internal static partial class BridgeApp
         app.MapMethods("/read", ["GET", "POST"], ReadRoute.Handle);
 
         return app;
+    }
+
+    /// <summary>On Windows, SO_EXCLUSIVEADDRUSE stops another program from sharing the port. It must be set before the bind.</summary>
+    private static Socket BindListenSocket(EndPoint endPoint)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return SocketTransportOptions.CreateDefaultBoundListenSocket(endPoint);
+        }
+
+        var socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { ExclusiveAddressUse = true };
+        try
+        {
+            socket.Bind(endPoint);
+            return socket;
+        }
+        catch
+        {
+            socket.Dispose();
+            throw;
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Skipped '{Origin}' in {Variable}. Use http(s)://host[:port].")]
