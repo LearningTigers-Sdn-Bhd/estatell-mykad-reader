@@ -22,8 +22,10 @@ File names stay the same as 1.x.
 | Start        | `HKLM\Software\Microsoft\Windows\CurrentVersion\Run\EstatellMyKadBridge`, every user at login. The binary is `WinExe`, so no console window opens |
 | Tray         | Windows hides new tray icons under **^** at first. The user docs show how to find it   |
 | Admin prompt | Once                                                                                  |
-| Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs                                       |
+| Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs. MyKad Reader then starts at the next login, because the installer may run as SYSTEM |
 | Uninstall    | Settings → Apps → MyKad Reader                                                        |
+
+GitHub Actions builds `estatell-mykad-setup.exe` with `.github/workflows/windows-package.yml`, because Native AOT cannot build Windows on a Mac. Download it from the workflow run. It holds both the x64 and the arm64 binary.
 
 Why a Run key and not a Windows service: a service runs in session 0, where card readers are harder to reach and debug. The Run key runs in the user's session, where the reader works.
 

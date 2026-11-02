@@ -60,7 +60,7 @@ Docs: [App changes](04-estatell/02-app-changes.md), [Check-in chip](04-estatell/
 
 Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packaging/02-build-and-release.md), [User docs](04-estatell/03-user-docs.md).
 
-- [ ] `feat(packaging): build the Windows installer` — `installer.iss`: install path, **MyKad Reader** display name, Run key, silent switches, stop and replace an older copy, remove 1.x Python files. Needs: read the card, show the status in the Windows tray. Docs: [Windows](03-packaging/01-installers.md#windows).
+- [x] `feat(packaging): build the Windows installer` — `installer.iss`: install path, **MyKad Reader** display name, Run key, silent switches, stop and replace an older copy, remove 1.x Python files. Needs: read the card, show the status in the Windows tray. Docs: [Windows](03-packaging/01-installers.md#windows).
 - [x] `feat(packaging): build the macOS package` — universal binary with `lipo`, `MyKad Reader.app` with `LSUIElement`, `pkgbuild` and `productbuild`, the LaunchAgent with `LimitLoadToSessionType` `Aqua`, pre- and post-install scripts, **Uninstall MyKad Reader.app**. Needs: read the card, show the status in the macOS menu bar. Docs: [macOS](03-packaging/01-installers.md#macos).
 - [ ] `ci: build, smoke test and release on tags` — `release.yml` with the Windows and macOS jobs, the smoke tests, the version from the tag, GitHub Release on `v*` in this public repo. Needs: both installers. Docs: [Build and release](03-packaging/02-build-and-release.md).
 - [ ] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader` with the download links, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt and tray screenshots, the S8 exception, a link from onboarding. Needs: show the status in the macOS menu bar and the Windows tray. Docs: [User docs](04-estatell/03-user-docs.md).
@@ -109,3 +109,4 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `34cc353` | `feat(tray): make the menu words clearer` |
 | `449d1bd` | `fix(tray): show the menu status lines in normal text` |
 | `b3b0fb7` | `feat(packaging): build the macOS package` |
+| `ba3e21a` | `feat(tray): show the status in the Windows tray` |
