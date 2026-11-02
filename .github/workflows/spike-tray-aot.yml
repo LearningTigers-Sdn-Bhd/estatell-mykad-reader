@@ -1,0 +1,68 @@
+# M1 spike: does a Kestrel server with a Shell_NotifyIcon tray publish cleanly with Native AOT on Windows?
+# Builds spikes/TrayAot for each Windows architecture and uploads the .exe
+# so the menu can be tried by hand on a real PC.
+name: spike-tray-aot
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - spikes/TrayAot/**
+      - .github/workflows/spike-tray-aot.yml
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [win-x64, win-arm64, win-x86]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          dotnet publish spikes/TrayAot -c Release -r ${{ matrix.rid }} -o publish 2>&1 | Tee-Object publish.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Report warnings, size and subsystem
+        shell: pwsh
+        run: |
+          $warnings = Select-String -Path publish.log -Pattern 'warning (IL|AOT)\d+' | ForEach-Object { $_.Line.Trim() } | Sort-Object -Unique
+          $size = (Get-Item publish/TrayAot.exe).Length
+          # PE subsystem: 2 is GUI (WinExe, no console window), 3 is console.
+          $bytes = [IO.File]::ReadAllBytes("publish/TrayAot.exe")
+          $pe = [BitConverter]::ToInt32($bytes, 0x3C)
+          $subsystem = [BitConverter]::ToUInt16($bytes, $pe + 24 + 68)
+          "## ${{ matrix.rid }}" >> $env:GITHUB_STEP_SUMMARY
+          "- Size: $([math]::Round($size / 1MB, 2)) MB ($size bytes)" >> $env:GITHUB_STEP_SUMMARY
+          "- PE subsystem: $subsystem (2 = GUI)" >> $env:GITHUB_STEP_SUMMARY
+          "- AOT and trim warnings: $($warnings.Count)" >> $env:GITHUB_STEP_SUMMARY
+          $warnings | ForEach-Object { "  - ``$_``" >> $env:GITHUB_STEP_SUMMARY }
+
+      # The runner has a desktop session, so the tray can start. This shows the exe starts, the server
+      # answers and the tray thread does not crash it. The menu itself needs a person.
+      - name: Start with and without the tray
+        if: matrix.rid != 'win-arm64'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          foreach ($mode in @('--no-tray', '')) {
+            $process = Start-Process ./publish/TrayAot.exe -ArgumentList $mode -PassThru
+            Start-Sleep -Seconds 3
+            try { $status = Invoke-RestMethod http://127.0.0.1:9293/status -TimeoutSec 5; $result = "status $($status.status), start $($status.start)" }
+            catch { $result = "no answer: $($_.Exception.Message)" }
+            $alive = -not $process.HasExited
+            "- Run ``$(if ($mode) { $mode } else { 'with tray' })``: $result, still running: $alive" >> $env:GITHUB_STEP_SUMMARY
+            if ($alive) { Stop-Process -Id $process.Id -Force; Start-Sleep -Seconds 1 }
+          }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: TrayAot-${{ matrix.rid }}
+          path: publish/TrayAot.exe

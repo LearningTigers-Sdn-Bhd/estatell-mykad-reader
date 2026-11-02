@@ -2,4 +2,11 @@
   <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PCSC" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Estatell.MyKad.Tests" />
+    <InternalsVisibleTo Include="Estatell.MyKad.Bridge.Tests" />
+  </ItemGroup>
 </Project>

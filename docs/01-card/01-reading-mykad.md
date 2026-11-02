@@ -6,7 +6,7 @@ Read the holder's details from the JPN application on the MyKad chip and return 
 
 ## Where it lives
 
-`src/Estatell.MyKad/`: `Apdu.cs`, `MyKadCard.cs`, `Decode.cs`, `States.cs`. The project has no networking and no PC/SC code. It talks to the card through `IReader` (see [PC/SC access](02-pcsc.md)).
+`src/Estatell.MyKad/`: `Apdu.cs`, `MyKadCard.cs`, `Decode.cs`, `MyKadData.cs`, `CardReadException.cs`, `States.cs`. `MyKadCard.Read(IReader, CancellationToken)` is the entry point. The project has no networking. The card logic talks to the card only through `IReader`; `PcscReader` and `FakeReader` are in `Reader/` (see [PC/SC access](02-pcsc.md)).
 
 ## Read sequence
 
@@ -72,13 +72,15 @@ Text is ASCII and trimmed.
 
 - Return only the fields Estatell uses. Race, religion, place of birth, citizenship and the old IC are read but never returned or logged. The Python bridge sends them all; 2.0.0 stops that.
 - Address line 3 is joined to line 2 with `, `. The Python bridge sends it as `address_line3`, and the hook drops it, so today the third line is lost.
-- City and state are title case, as in the Python bridge.
+- City and state are title case with Python's `str.title()` rules: a letter is upper case after a non-letter, else lower case (`W.P. KUALA LUMPUR` → `W.P. Kuala Lumpur`). .NET's `ToTitleCase` leaves all-caps words alone, so it is not used.
 - `formatted_ic` is `######-##-####`.
 - `nationality_code` and `country_code` are always `MY`.
 - The state is mapped to the LHDN code with the same table as `EInvoice::MalaysiaStates` in Estatell. If the state text does not match, the first two postcode digits decide (for example 88–91 Sabah, 50–60 Kuala Lumpur). Port the table and the fallback from `STATE_CODES` and `resolve_state_code()` in the Python bridge. No match gives an empty code.
+- The date of birth and the postcode are empty when the card holds no valid BCD date or a blank postcode. The Python bridge sends `0000-00-00` style values or `00000` there.
 - The portrait is returned as a `data:image/jpeg;base64,…` string, or `null` if it is missing or not a JPEG.
-- A failed step throws `CardReadException` with the step name and the status words. The message never holds card data.
-- Card data lives in memory only. Byte buffers are cleared after the response is sent.
+- A failed step throws `CardReadException` with the step name (for example `JPN1-4 read`) and the status words. The message never holds card data. A chunk shorter than asked for also fails.
+- A refused portrait step gives `photo_base64: null` and the other fields, as in the Python bridge. A reader problem (card pulled out) still fails the read.
+- Card data lives in memory only. The raw file and response buffers are cleared once decoded. Decoded strings (the name, the portrait's base64) cannot be cleared and stay until garbage collected.
 
 ## Output
 
@@ -96,6 +98,7 @@ The Python bridge sends other names (`raw_ic`, `government_id`, `state_name`, `h
 
 ## Tests
 
-- Recorded responses for each file in `tests/Estatell.MyKad.Tests/fixtures/`, with personal data replaced.
+- `Card/CardFixture.cs` builds made-up JPN files at the real offsets and the full command and response sequence for `FakeReader`.
+- The raw JPN files of a real card in `tests/Estatell.MyKad.Tests/fixtures/parity/`, with personal data replaced. See [Recording the parity fixture](../05-development/01-setup-and-testing.md#recording-the-parity-fixture).
 - One test per field, including an empty portrait, a non-JPEG portrait, an unknown state with a postcode, and each failing status word.
-- A parity test: the fixture output must equal the Python bridge output saved next to it.
+- A parity test (`Card/ParityTests.cs`): the fixture files must decode to `python.json`, the Python bridge's output for the same files. Both decoders read the same bytes, so a difference is a decode difference, not a read difference. The test maps the 1.x names and allows only the changes in [Rules](#rules): line 3 joined to line 2, empty date and postcode instead of zeros, and NUL padding trimmed (Python's `strip()` keeps it).

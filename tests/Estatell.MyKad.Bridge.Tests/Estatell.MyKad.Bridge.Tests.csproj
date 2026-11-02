@@ -11,6 +11,9 @@
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Estatell.MyKad.Tests\Card\CardFixture.cs" Link="CardFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Estatell.MyKad.Bridge\Estatell.MyKad.Bridge.csproj" />
   </ItemGroup>
 </Project>
