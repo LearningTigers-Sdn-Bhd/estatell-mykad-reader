@@ -45,7 +45,7 @@ Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md)
 - [x] `feat(bridge): run as a single instance` — `SO_EXCLUSIVEADDRUSE` on Windows, the per-user lock, exit 0 for a second copy of the same user, wait for the port for another user. Needs: serve status. Docs: [Single instance](02-bridge/02-security.md#single-instance), [More than one user](02-bridge/04-tray.md#more-than-one-user). **macOS done. Open: `SO_EXCLUSIVEADDRUSE` and the `Local\\` mutex on Windows.**
 - [x] `feat(bridge): track when an Estatell page was last seen` — store the time and host of the last request with an allowed `Origin`, "connected" for 10 seconds after it. Tests with a fake clock: allowed, refused and no-`Origin` requests. Needs: remove the pairing fields. Docs: [Menu](02-bridge/04-tray.md#menu).
 - [x] `feat(tray): add the tray interface and run the server beside it` — `ITray`, `NoTray`, `TrayStatus`, `TrayActions`, `--no-tray`, `BridgeServer` (wait for the port in the background, restart, stop), the signal handling, the app built in `BridgeApp`. Needs: run as a single instance, track when an Estatell page was last seen. Docs: [Tray](02-bridge/04-tray.md#code).
-- [ ] `feat(tray): show the status in the macOS menu bar` — the macOS version from the spike (`NSStatusItem`), the status, reader, card and Estatell lines, the icons, **Help**, **Restart MyKad Reader**. Needs: the tray interface, the tray spike (Mac half). Docs: [Tray](02-bridge/04-tray.md).
+- [x] `feat(tray): show the status in the macOS menu bar` — the macOS version from the spike (`NSStatusItem`), the status, reader, card and Estatell lines, the icons, **Help**, **Restart MyKad Reader**. Needs: the tray interface, the tray spike (Mac half). Docs: [Tray](02-bridge/04-tray.md).
 - [ ] `feat(tray): show the status in the Windows tray` — the `Shell_NotifyIcon` version from the spike, `WinExe` with `AllocConsole` for `--foreground`. Needs: the tray interface, the tray spike (Windows half). Docs: [Tray](02-bridge/04-tray.md#windows).
 - [x] `feat(bridge): read the card` — `GET`/`POST /read`, `403` without an allowed `Origin`, the error `code` table, the 10-second read timeout and `409 busy`, and a test that a read writes no card field to the log. Needs: remove the pairing fields, read and decode the JPN files. Docs: [GET /read](02-bridge/01-http-api.md#get-read).
 
@@ -75,6 +75,7 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 - [ ] `feat(bridge): read without the portrait on request` — `?photo=false` skips JPN1-2 for a faster fill.
 - [ ] `feat(packaging): update in the background` — check GitHub Releases once a day and install a newer minor or patch version quietly.
 - [ ] `chore(packaging): sign the installers` — when there is a budget. Windows code signing certificate and Apple Developer ID with notarization. Remove the confirm steps from the user docs.
+- [ ] `feat(tray): quit and reopen MyKad Reader` — nice to have, only if a hotel asks. **Quit MyKad Reader** with a confirmation, a Start menu shortcut to reopen it, and it starts again at the next login.
 
 - [ ] `feat(pairing): connect a computer to one hotel` — only if a hotel needs to know which computers have a reader or to cut one off. The dropped design is in git history (`e23270e`, `docs/02-bridge/03-connecting.md`).
 
@@ -103,3 +104,7 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `8b3d75f` | `feat(bridge): log to a rotating file without card data` |
 | `e332087` | `feat(bridge): read the card` |
 | `9554d83` | `feat(bridge): run as a single instance` |
+| `7e1d7e5` | `feat(tray): add the tray interface and run the server beside it` |
+| `4494770` | `feat(tray): show the status in the macOS menu bar` |
+| `34cc353` | `feat(tray): make the menu words clearer` |
+| `449d1bd` | `fix(tray): show the menu status lines in normal text` |
