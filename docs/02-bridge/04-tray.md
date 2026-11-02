@@ -52,7 +52,8 @@ Show staff that MyKad Reader is running, that the card reader is plugged in, and
 
 - `NSStatusItem` through the Objective-C runtime (`objc_msgSend` with `LibraryImport`). No Xamarin or MAUI.
 - `NSApplication` runs on the main thread with the `Accessory` activation policy (no Dock icon). The server runs on a background thread.
-- The icon is a template image, so macOS colours it for light and dark menu bars.
+- The icon is a template image, so macOS colours it for light and dark menu bars. It turns grey (`appearsDisabled`) when the status is not **Ready**. A timer reads `Status` every 2 seconds to follow the reader, because there is no plug callback.
+- `Stop` from another thread runs `stop:` on the main thread and posts an empty event, so the run loop wakes and `Run` returns.
 - Menu actions go to a small Objective-C class made at run time (`objc_allocateClassPair`, `class_addMethod`) whose methods are `UnmanagedCallersOnly` functions. The same class is the menu delegate, so `menuWillOpen:` refreshes the status line.
 - Needs an app bundle with `LSUIElement`. See [macOS](../03-packaging/01-installers.md#macos).
 

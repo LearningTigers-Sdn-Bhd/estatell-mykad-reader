@@ -5,6 +5,8 @@
     <RootNamespace>Estatell.MyKad.Bridge</RootNamespace>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- The macOS tray passes function pointers to the Objective-C runtime. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- PCSC is not marked trimmable, so its warnings fold into one IL2104. The only one is IL2075 in
          SCardHelper.GetAttrDesc, which is safe (see docs/01-card/02-pcsc.md). Our projects still warn in full.
          Check a new package with -p:TrimmerSingleWarn=false. -->
@@ -12,6 +14,9 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Estatell.MyKad.Bridge.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tray\Icons\menubar.png" LogicalName="menubar.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Estatell.MyKad\Estatell.MyKad.csproj" />
