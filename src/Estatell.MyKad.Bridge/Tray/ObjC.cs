@@ -30,6 +30,9 @@ internal static partial class ObjC
     public static partial nint Send(nint receiver, nint sel, nint arg);
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
+    public static partial nint Send(nint receiver, nint sel, nint arg1, nint arg2);
+
+    [LibraryImport(Lib, EntryPoint = "objc_msgSend")]
     public static partial nint Send(nint receiver, nint sel, nint arg, nuint length);
 
     [LibraryImport(Lib, EntryPoint = "objc_msgSend")]

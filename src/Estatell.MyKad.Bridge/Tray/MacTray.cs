@@ -24,7 +24,6 @@ internal sealed unsafe class MacTray : ITray
 
     private TrayActions _actions = null!;
     private nint _readerItem;
-    private nint _cardItem;
     private nint _estatellItem;
     private nint _statusLineItem;
     private nint _statusButton;
@@ -52,15 +51,14 @@ internal sealed unsafe class MacTray : ITray
         var target = Send(Send(CreateTargetClass(), Sel("alloc")), Sel("init"));
         var menu = New("NSMenu");
         Send(menu, Sel("setDelegate:"), target);
-        AddItem(menu, MacMenuText.Header, 0, 0);
+        SetTitle(AddItem(menu, TrayMenuText.Header, 0, 0), TrayMenuText.Header);
         _statusLineItem = AddItem(menu, "", 0, 0);
         AddSeparator(menu);
         _readerItem = AddItem(menu, "", 0, 0);
-        _cardItem = AddItem(menu, "", 0, 0);
         _estatellItem = AddItem(menu, "", 0, 0);
         AddSeparator(menu);
-        AddItem(menu, "Help", Sel("help:"), target);
-        AddItem(menu, "Restart MyKad Reader", Sel("restart:"), target);
+        AddItem(menu, TrayMenuText.Help, Sel("help:"), target);
+        AddItem(menu, TrayMenuText.Restart, Sel("restart:"), target);
 
         // The status bar drops an item nobody retains.
         var statusBar = Send(Class("NSStatusBar"), Sel("systemStatusBar"));
@@ -147,12 +145,11 @@ internal sealed unsafe class MacTray : ITray
     private void Refresh()
     {
         var status = _actions.Status();
-        SetTitle(_statusLineItem, MacMenuText.StatusLine(status.State));
-        SetTitle(_readerItem, MacMenuText.ReaderLine(status));
-        SetTitle(_cardItem, MacMenuText.CardLine(status));
-        SetTitle(_estatellItem, MacMenuText.EstatellLine(status));
+        SetTitle(_statusLineItem, TrayMenuText.MainLine(status));
+        SetTitle(_readerItem, TrayMenuText.ReaderLine(status));
+        SetTitle(_estatellItem, TrayMenuText.EstatellLine(status));
 
-        var grey = MacMenuText.IconGrey(status.State);
+        var grey = TrayMenuText.IconGrey(status.State);
         if (_grey != grey)
         {
             _grey = grey;
@@ -160,7 +157,14 @@ internal sealed unsafe class MacTray : ITray
         }
     }
 
-    private static void SetTitle(nint item, string title) => Send(item, Sel("setTitle:"), Str(title));
+    // Items without an action are disabled, which draws them faint. An attributed title with the label colour keeps them readable.
+    private static void SetTitle(nint item, string title)
+    {
+        var attributes = Send(Class("NSDictionary"), Sel("dictionaryWithObject:forKey:"), Send(Class("NSColor"), Sel("labelColor")), Str("NSColor"));
+        var attributed = Send(Send(Class("NSAttributedString"), Sel("alloc")), Sel("initWithString:attributes:"), Str(title), attributes);
+        Send(item, Sel("setAttributedTitle:"), attributed);
+        Send(attributed, Sel("release"));
+    }
 
     // An exception must not cross back into Objective-C.
     private static void Guard(Action action)

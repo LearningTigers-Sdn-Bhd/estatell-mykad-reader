@@ -8,33 +8,34 @@ Show staff that MyKad Reader is running, that the card reader is plugged in, and
 
 ```
  MyKad Reader 2.0.0
- ● Ready
+ 🟢 Ready. Insert a MyKad
  ───────────────────────────
  Card reader: ACS ACR39U
- Card: none
- Estatell: connected · app.estatell.com
+ Estatell: page open
  ───────────────────────────
- Help
+ Set-up help
  Restart MyKad Reader
 ```
 
 | Line         | Values                                                                 | From                         |
 | ------------ | ---------------------------------------------------------------------- | ---------------------------- |
-| Status       | See the table below                                                    | All of the lines below       |
-| Card reader  | The reader name, or **not found**                                      | `reader_name` in `/status`   |
-| Card         | **inserted** or **none**                                               | `card_present` in `/status`  |
-| Estatell     | **connected · {host}** or **not seen**                                 | The last request with an allowed `Origin` |
+| Main line    | See the table below                                                    | The reader, the card and the port |
+| Card reader  | The short reader name, or **not found**                                | `reader_name` in `/status`   |
+| Estatell     | **page open** or **no page open**                                      | The last request with an allowed `Origin` |
 
-| Status line                                   | Shown when                                   | Icon      |
+| Main line                                     | Shown when                                   | Icon      |
 | --------------------------------------------- | -------------------------------------------- | --------- |
-| ● Ready                                       | Reader plugged in                            | Normal    |
-| ○ Plug in the card reader                     | No reader                                    | Grey      |
-| ○ MyKad Reader is open for another user       | Another user on this computer runs it        | Grey      |
+| 🟢 Ready. Insert a MyKad                      | Reader plugged in, no card                   | Normal    |
+| 🟢 MyKad inserted                             | Reader plugged in, card in                   | Normal    |
+| ⚪ Plug in the card reader                    | No reader                                    | Grey      |
+| ⚪ Open for another user on this computer     | Another user on this computer runs it        | Grey      |
 
-- **Estatell: connected** means a request with an allowed `Origin` came in during the last 10 seconds. The check-in page polls `/status` every 2.5 seconds, so the line turns on within a few seconds of opening it, and turns to **not seen** 10 seconds after the page closes. `{host}` is the host of that `Origin`, for example `app.estatell.com` or `demo.estatell.com`.
-- **not seen** is not an error. It only means no Estatell page with the MyKad box is open on this computer now. It does not change the icon.
+- The reader name is cut at " ICC Reader", so `ACS ACR39U ICC Reader` and `ACS ACR39U ICC Reader 0` both show **ACS ACR39U**. A name without that text stays whole. An empty name shows **not found**.
+- The words live in `TrayMenuText`, which the macOS and Windows trays share.
+- **Estatell: page open** means a request with an allowed `Origin` came in during the last 10 seconds. The check-in page polls `/status` every 2.5 seconds, so the line turns on within a few seconds of opening it, and turns to **no page open** 10 seconds after the page closes. The host is not shown.
+- **no page open** is not an error. It only means no Estatell page with the MyKad box is open on this computer now. It does not change the icon.
 - The menu refreshes each time it opens (`menuWillOpen:` on macOS, before `TrackPopupMenu` on Windows). The icon refreshes when the reader is plugged in or out.
-- **Help** opens the `set-up-mykad-reader` user docs page.
+- **Set-up help** opens the `set-up-mykad-reader` user docs page.
 - **Restart MyKad Reader** stops the server and starts it again.
 - There is no **Quit**. Quitting would stop check-in without a warning.
 - The menu never shows card data.
