@@ -60,6 +60,20 @@ Show staff that MyKad Reader is running, that the card reader is plugged in, and
 
 The tray owns the main thread, so nothing waits on the ASP.NET host. Its default console lifetime catches SIGTERM and Ctrl+C, asks the host to stop and swallows the signal: the process keeps running. Replace it with an `IHostLifetime` that does nothing, and handle SIGTERM and SIGINT with `PosixSignalRegistration`: stop the server, then exit. `launchctl`, the installers and logout send SIGTERM.
 
+## Code
+
+| Piece | What |
+| --- | --- |
+| `ITray` | `Run` blocks on the main thread until `Stop`. `Stop` is safe from any thread, and a stop before the run is not lost. No `Dispose`, because a restart disposes the app that created the tray. `Run` removes the icon when it ends |
+| `TrayActions` | `Help`, `Restart` and `Status`. None waits for the server, so a tray can call them on its UI thread |
+| `TrayStatus` | The state and the lines of the menu. Refresh the menu and the icon from `Status` |
+| `TrayChooser` | Picks the tray. Each OS tray adds its branch here |
+| `BridgeServer` | Runs beside the tray. Waits for the port, stops, and rebuilds the app for a restart, because a stopped `WebApplication` cannot start again |
+
+Program order: build the app and take the lock, register the signals, start the server on a background task, then run the tray on the main thread. When `Run` returns, stop the server and exit.
+
+**Help** opens `https://docs.estatell.com/en/docs/guests/identity-documents/set-up-mykad-reader`. The page does not exist until the user docs item lands.
+
 ## More than one user
 
 The Run key and the LaunchAgent start a copy for each logged-in user. Only one copy can hold port 9292. See [Single instance](02-security.md#single-instance).
@@ -73,14 +87,15 @@ The M1 spike (`spikes/TrayAot/`, run on 30 Oct 2026). One binary: Kestrel on a b
 
 | Check                                | osx-arm64                                                  | win-x64 · win-arm64 · win-x86 |
 | ------------------------------------ | ---------------------------------------------------------- | ----------------------------- |
-| AOT publish                          | Yes. 9.3 MB, nearly all of it Kestrel                      | Pending: `spike-tray-aot` workflow |
-| AOT and trim warnings                | None                                                       | Pending                       |
+| AOT publish                          | Yes. 9.3 MB, nearly all of it Kestrel                      | Yes, all three (run 41537649352) |
+| AOT and trim warnings                | None                                                       | None                          |
 | Icon shows                           | Status item visible, image set, 34 × 22 pt button          | Pending                       |
 | Menu actions reach .NET              | Yes, sent through AppKit (`--self-test`)                   | Pending: a hand check on a PC |
 | Restart server in the same process   | Yes. Same process ID, `start` goes from 1 to 2             | Pending                       |
 | Light and dark icons                 | Template image                                             | `.ico` per taskbar theme, swapped on `WM_SETTINGCHANGE`. Pending |
 | No Dock icon or console window       | Yes, `LSUIElement` in a minimal `.app`                     | `WinExe`. Pending             |
 
+- The Windows spike ran on a real PC on 3 Nov 2026. The rows still marked Pending, the browser and the antivirus result are not confirmed yet. One browser blocked the download as dangerous until it was kept by hand.
 - `--self-test` sends the **Restart server** action and `menuWillOpen:` through AppKit, because the build machine allows no scripted clicks. Clicking the icon by hand is still a check to do.
 - The SIGTERM problem in [Signals](#signals) came from this spike.
 - Icons come from `spikes/TrayAot/icons/card.svg` with `make-icons.sh`. They are placeholders until there is a real logo.

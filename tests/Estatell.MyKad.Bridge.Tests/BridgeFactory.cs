@@ -1,3 +1,4 @@
+using Estatell.MyKad.Bridge.Tray;
 using Estatell.MyKad.Reader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -44,6 +45,7 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
             services.AddSingleton<IReader>(_reader);
             services.AddSingleton(new LogFileOptions(LogPath));
             services.AddSingleton<IInstanceGuard>(new FreeGuard());
+            services.AddSingleton<ITray>(new NoTray());
             if (_readTimeout is { } timeout)
             {
                 services.AddSingleton(new ReadOptions(timeout));

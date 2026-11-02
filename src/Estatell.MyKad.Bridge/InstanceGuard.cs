@@ -74,7 +74,7 @@ internal sealed class InstanceGuard(string? lockPath, int port) : IInstanceGuard
 internal static partial class StartupGate
 {
     /// <summary>Waits while another user's copy holds the port, and checks again every <paramref name="retry"/>.</summary>
-    public static async Task WaitForPortAsync(IInstanceGuard guard, TimeSpan retry, ILogger logger, CancellationToken cancellationToken)
+    public static async Task WaitForPortAsync(IInstanceGuard guard, TimeSpan retry, ILogger logger, CancellationToken cancellationToken, Action? waiting = null)
     {
         var waited = false;
         while (!guard.IsPortFree())
@@ -83,6 +83,7 @@ internal static partial class StartupGate
             {
                 LogWaiting(logger, BridgeInfo.Port, (int)retry.TotalSeconds);
                 waited = true;
+                waiting?.Invoke();
             }
 
             await Task.Delay(retry, cancellationToken);
