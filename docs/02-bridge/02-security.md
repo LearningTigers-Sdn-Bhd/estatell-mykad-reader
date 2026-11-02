@@ -75,7 +75,6 @@ A refused origin gets `403` with `code: forbidden` and no CORS headers.
 - A request line has no query string, no body and no header except `Origin`. Control characters in the path or origin are replaced by `?`, so a caller cannot forge a line.
 - A successful `/status` poll (every 2.5 seconds) is logged only with `--verbose`. Every other request is logged.
 - An exception is logged as its type and message, without the stack.
-- macOS writes the file today. The Windows path comes with the Windows item.
 
 ## Single instance
 

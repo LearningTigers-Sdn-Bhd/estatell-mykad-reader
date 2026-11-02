@@ -93,13 +93,13 @@ The M1 spike (`spikes/TrayAot/`, run on 30 Oct 2026). One binary: Kestrel on a b
 | ------------------------------------ | ---------------------------------------------------------- | ----------------------------- |
 | AOT publish                          | Yes. 9.3 MB, nearly all of it Kestrel                      | Yes, all three (run 41537649352) |
 | AOT and trim warnings                | None                                                       | None                          |
-| Icon shows                           | Status item visible, image set, 34 × 22 pt button          | Pending                       |
-| Menu actions reach .NET              | Yes, sent through AppKit (`--self-test`)                   | Pending: a hand check on a PC |
-| Restart server in the same process   | Yes. Same process ID, `start` goes from 1 to 2             | Pending                       |
-| Light and dark icons                 | Template image                                             | `.ico` per taskbar theme, swapped on `WM_SETTINGCHANGE`. Pending |
-| No Dock icon or console window       | Yes, `LSUIElement` in a minimal `.app`                     | `WinExe`. Pending             |
+| Icon shows                           | Status item visible, image set, 34 × 22 pt button          | Yes, in the installed 2.0.0 app |
+| Menu actions reach .NET              | Yes, sent through AppKit (`--self-test`)                   | Yes, by hand on a PC, with **Set-up help** and **Restart MyKad Reader** |
+| Restart server in the same process   | Yes. Same process ID, `start` goes from 1 to 2             | Yes, in the installed 2.0.0 app |
+| Light and dark icons                 | Template image                                             | Dropped: one colour per state shows on both |
+| No Dock icon or console window       | Yes, `LSUIElement` in a minimal `.app`                     | Yes, `WinExe`                 |
 
-- The Windows spike ran on a real PC on 3 Nov 2026. The rows still marked Pending, the browser and the antivirus result are not confirmed yet. One browser blocked the download as dangerous until it was kept by hand.
+- The Windows spike ran on a real PC on 3 Nov 2026. The table's Windows results come from the installed 2.0.0 app on that PC. The antivirus result is not recorded. One browser blocked the download as dangerous until it was kept by hand.
 - `--self-test` sends the **Restart server** action and `menuWillOpen:` through AppKit, because the build machine allows no scripted clicks. Clicking the icon by hand is still a check to do.
 - The SIGTERM problem in [Signals](#signals) came from this spike.
 - Icons come from `spikes/TrayAot/icons/card.svg` with `make-icons.sh`. They are placeholders until there is a real logo.
