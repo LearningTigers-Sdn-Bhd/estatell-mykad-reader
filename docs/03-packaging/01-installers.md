@@ -88,3 +88,5 @@ Run before each release, on a real x64 Windows 10 PC and a Mac on macOS 15:
 - [ ] With two users logged in, the second shows "MyKad Reader is open for another user".
 - [ ] Installs over 1.1.0 (Python) and over the previous 2.x.
 - [ ] Uninstall removes the app and the start entry.
+
+2.0.0: the user reported all checks passed on 3 Nov 2026, with the universal installers from the CI run of PR #8.
