@@ -16,5 +16,5 @@ public class OptionsTests
 
     [Fact]
     public void VersionDropsTheCommit() =>
-        Assert.Equal("2.0.0", BridgeInfo.Version);
+        Assert.Equal("2.0.1", BridgeInfo.Version);
 }

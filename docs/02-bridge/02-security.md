@@ -17,7 +17,7 @@ Every request runs these in order. The card is never touched before all pass.
 
 ## Allowed origins
 
-- `https://app.estatell.com`, `https://demo.estatell.com`.
+- `https://estatell.com`, `https://app.estatell.com`, `https://demo.estatell.com`. Since 2.0.1, `estatell.com` is allowed so Estatell can move there. Other subdomains stay refused.
 - For development: `http(s)://localhost`, `127.0.0.1` and any `*.test`, with any port. Debug builds only. A release build allows them only when `ESTATELL_BRIDGE_ORIGINS` lists them, because no token stands behind the Origin check.
 - `ESTATELL_BRIDGE_ORIGINS` adds more, comma separated, each `http(s)://host[:port]`. A trailing `/` is ignored. Any other entry is skipped with a warning in the log.
 - Matching ignores case and compares the parsed host, so `app.estatell.com.evil.com` and `foo.test.evil.com` are refused.

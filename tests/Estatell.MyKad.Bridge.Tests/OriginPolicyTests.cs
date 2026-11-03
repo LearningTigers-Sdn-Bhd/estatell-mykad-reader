@@ -3,6 +3,7 @@ namespace Estatell.MyKad.Bridge.Tests;
 public class OriginPolicyTests
 {
     [Theory]
+    [InlineData("https://estatell.com")]
     [InlineData("https://app.estatell.com")]
     [InlineData("https://demo.estatell.com")]
     [InlineData("https://APP.estatell.com")]
@@ -43,6 +44,10 @@ public class OriginPolicyTests
     [InlineData("")]
     [InlineData("http://evil.com")]
     [InlineData("http://app.estatell.com")]
+    [InlineData("http://estatell.com")]
+    [InlineData("https://estatell.com.evil.com")]
+    [InlineData("https://evilestatell.com")]
+    [InlineData("https://foo.estatell.com")]
     [InlineData("https://app.estatell.com.evil.com")]
     [InlineData("https://evilapp.estatell.com")]
     [InlineData("https://foo.test.evil.com")]

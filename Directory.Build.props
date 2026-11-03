@@ -7,7 +7,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
 
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Company>Jesselton Pixel Sdn Bhd</Company>
     <Product>Estatell MyKad Reader</Product>
     <Copyright>Copyright © Jesselton Pixel Sdn Bhd</Copyright>

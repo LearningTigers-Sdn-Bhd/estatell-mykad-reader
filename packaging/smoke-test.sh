@@ -32,6 +32,7 @@ code() {
 
 ACTUAL="$(curl -s -m 5 "$BASE/status" | sed -nE 's/.*"version": *"([^"]*)".*/\1/p')"
 check "status returns the version" "$ACTUAL" "$VERSION"
+check "Estatell Origin is accepted" "$(code -H 'Origin: https://estatell.com' "$BASE/status")" 200
 check "foreign Origin is refused" "$(code -H 'Origin: https://evil.example' "$BASE/status")" 403
 check "wrong Host is refused" "$(code -H 'Host: evil.example' "$BASE/status")" 403
 check "read with no Origin is refused" "$(code "$BASE/read")" 403

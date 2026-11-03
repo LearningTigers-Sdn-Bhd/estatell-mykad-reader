@@ -10,14 +10,14 @@ MyKad Reader shows an icon in the Windows tray and the macOS menu bar. Its menu 
 
 ## Background
 
-Estatell has a Python bridge today: `estatell/tools/mykad-bridge/mykad_bridge.py` (version 1.1.0), bundled with PyInstaller. It works, but:
+Estatell had a Python bridge: `estatell/tools/mykad-bridge/mykad_bridge.py` (version 1.1.0), bundled with PyInstaller. It worked, but:
 
 - Antivirus tools often flag unsigned PyInstaller programs.
 - Each build bundles a Python runtime.
 - It has no icon, so staff cannot see whether it is running.
 - Staff are asked to download the bridge from the check-in page.
 
-MyKad Reader 2.0.0 replaces it. The Python bridge is removed after 2.0.0 ships.
+MyKad Reader 2.0.0 replaces it. The Python bridge was removed after 2.0.0 shipped. Its last Estatell commit is `670c6a01`.
 
 ## Decisions
 
@@ -34,7 +34,7 @@ MyKad Reader 2.0.0 replaces it. The Python bridge is removed after 2.0.0 ships.
 | Downloads     | GitHub Releases                                                                                       |
 | Code signing  | None for now (no budget). The user docs explain the confirm prompts                                   |
 | Wording       | Plain words on screens: "MyKad Reader", "running", "confirm". See [Words on screen](04-estatell/01-check-in-chip.md#words-on-screen) |
-| Python bridge | Removed after 2.0.0. Used only to compare output in M0                                                |
+| Python bridge | Removed after 2.0.0. It was used only to compare output in M0                                         |
 
 ## How a scan works
 
