@@ -16,7 +16,7 @@ internal sealed class BridgeFactory : WebApplicationFactory<Program>
     private readonly TimeSpan? _readTimeout;
     private readonly OriginPolicy? _policy;
     private readonly TimeProvider? _clock;
-    private readonly string _logDirectory = Path.Combine(Path.GetTempPath(), $"mykad-bridge-tests-{Guid.NewGuid():N}");
+    private readonly string _logDirectory = Path.Combine(Path.GetTempPath(), $"mykad-reader-tests-{Guid.NewGuid():N}");
 
     public BridgeFactory(IReader reader, OriginPolicy? policy = null, TimeProvider? clock = null, TimeSpan? readTimeout = null)
     {

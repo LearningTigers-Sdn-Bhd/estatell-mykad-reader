@@ -9,14 +9,17 @@ internal static class TrayMenuText
 
     public const string Restart = "Restart MyKad Reader";
 
-    public static string Header => $"MyKad Reader {BridgeInfo.Version}";
+    public static string Header => $"Estatell MyKad Reader {BridgeInfo.Version}";
 
     /// <summary>The one line that says what to do next. A card in the reader only counts when the reader is ready.</summary>
-    public static string MainLine(TrayStatus status) => status.State switch
+    public static string MainLine(TrayStatus status) => $"{(status.State == TrayState.Ready ? "🟢" : "⚪")} {MainWords(status)}";
+
+    /// <summary>The main line without its dot, for Windows: its menus draw an emoji without colour, so a green dot looks grey.</summary>
+    public static string MainWords(TrayStatus status) => status.State switch
     {
-        TrayState.Ready => status.CardPresent ? "🟢 MyKad inserted" : "🟢 Ready. Insert a MyKad",
-        TrayState.NoReader => "⚪ Plug in the card reader",
-        TrayState.OtherUser => "⚪ Open for another user on this computer",
+        TrayState.Ready => status.CardPresent ? "MyKad inserted" : "Ready. Insert a MyKad",
+        TrayState.NoReader => "Plug in the card reader",
+        TrayState.OtherUser => "Open for another user on this computer",
         _ => throw new ArgumentOutOfRangeException(nameof(status)),
     };
 

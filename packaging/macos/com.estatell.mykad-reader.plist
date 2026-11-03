@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.estatell.mykad-bridge</string>
+    <string>com.estatell.mykad-reader</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Library/Application Support/Estatell/MyKadBridge/MyKad Reader.app/Contents/MacOS/mykad-bridge</string>
+        <string>/Library/Application Support/Estatell/MyKadReader/Estatell MyKad Reader.app/Contents/MacOS/mykad-reader</string>
     </array>
     <!-- Only in a desktop session, where the menu bar exists. -->
     <key>LimitLoadToSessionType</key>

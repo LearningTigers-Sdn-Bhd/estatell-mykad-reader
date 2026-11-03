@@ -9,8 +9,8 @@ REPO="$(cd "$HERE/../.." && pwd)"
 PROJECT="$REPO/src/Estatell.MyKad.Bridge"
 OUT="$REPO/artifacts/macos"
 WORK="$OUT/work"
-LABEL=com.estatell.mykad-bridge
-SUPPORT="Library/Application Support/Estatell/MyKadBridge"
+LABEL=com.estatell.mykad-reader
+SUPPORT="Library/Application Support/Estatell/MyKadReader"
 VERSION="${1:-$(dotnet msbuild "$PROJECT" -getProperty:Version)}"
 
 rm -rf "$OUT"
@@ -21,13 +21,14 @@ for rid in osx-arm64 osx-x64; do
 done
 
 ROOT="$WORK/pkgroot"
-APP="$ROOT/$SUPPORT/MyKad Reader.app"
-UNINSTALL="$ROOT/Applications/Estatell/Uninstall MyKad Reader.app"
+APP="$ROOT/$SUPPORT/Estatell MyKad Reader.app"
+UNINSTALL="$ROOT/Applications/Estatell/Uninstall Estatell MyKad Reader.app"
 
-mkdir -p "$APP/Contents/MacOS" "$ROOT/Library/LaunchAgents" "$(dirname "$UNINSTALL")"
-lipo -create -output "$APP/Contents/MacOS/mykad-bridge" \
-    "$WORK/publish/osx-arm64/mykad-bridge" "$WORK/publish/osx-x64/mykad-bridge"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$ROOT/Library/LaunchAgents" "$(dirname "$UNINSTALL")"
+lipo -create -output "$APP/Contents/MacOS/mykad-reader" \
+    "$WORK/publish/osx-arm64/mykad-reader" "$WORK/publish/osx-x64/mykad-reader"
 sed "s/@VERSION@/$VERSION/g" "$HERE/Info.plist" > "$APP/Contents/Info.plist"
+cp "$PROJECT/Tray/Icons/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 cp "$HERE/uninstall.sh" "$ROOT/$SUPPORT/uninstall.sh"
 cp "$REPO/packaging/THIRD-PARTY-NOTICES.txt" "$ROOT/$SUPPORT/THIRD-PARTY-NOTICES.txt"
 cp "$HERE/$LABEL.plist" "$ROOT/Library/LaunchAgents/$LABEL.plist"
@@ -36,7 +37,7 @@ chmod 644 "$ROOT/Library/LaunchAgents/$LABEL.plist"
 
 osacompile -o "$UNINSTALL" "$HERE/uninstall.applescript"
 /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.estatell.mykad-reader.uninstall" \
-    -c "Set :CFBundleName Uninstall MyKad Reader" "$UNINSTALL/Contents/Info.plist"
+    -c "Set :CFBundleName Uninstall Estatell MyKad Reader" "$UNINSTALL/Contents/Info.plist"
 
 # Extended attributes would ship as ._* sidecar files.
 xattr -cr "$ROOT"
@@ -55,7 +56,7 @@ done
 
 pkgbuild --root "$ROOT" --scripts "$HERE/scripts" --component-plist "$WORK/components.plist" \
     --identifier "$LABEL" --version "$VERSION" --install-location / \
-    "$WORK/mykad-bridge.pkg"
+    "$WORK/mykad-reader.pkg"
 
 sed "s/@VERSION@/$VERSION/g" "$HERE/distribution.xml" > "$WORK/distribution.xml"
 productbuild --distribution "$WORK/distribution.xml" --package-path "$WORK" "$OUT/estatell-mykad.pkg"

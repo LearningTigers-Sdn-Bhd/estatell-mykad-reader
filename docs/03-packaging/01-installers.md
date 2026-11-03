@@ -11,19 +11,29 @@ An admin opens one file once. MyKad Reader then starts at every login, for every
 | Windows | `estatell-mykad-setup.exe`  | Inno Setup 6, `packaging/windows/installer.iss` |
 | macOS   | `estatell-mykad.pkg`        | `pkgbuild`, `packaging/macos/`     |
 
-File names stay the same as 1.x.
+The setup file names stay the same as 1.x. Everything else uses the 2.0.0 names.
+
+| Name | Value |
+| ---- | ----- |
+| App name | **Estatell MyKad Reader** |
+| Publisher and copyright holder | Jesselton Pixel Sdn Bhd |
+| Program file | `mykad-reader` (`.exe` on Windows) |
+
+The source project stays `Estatell.MyKad.Bridge`, because users never see it. The short name **MyKad Reader** stays in the menu's **Restart MyKad Reader**, the check-in chip and the user docs.
 
 ## Windows
 
 | Item         | Value                                                                                 |
 | ------------ | ------------------------------------------------------------------------------------- |
-| Install to   | `C:\Program Files\Estatell MyKad Bridge\` (same as 1.x)                                |
-| Shown as     | **MyKad Reader** in Settings → Apps, publisher Estatell                                |
-| Start        | `HKLM\Software\Microsoft\Windows\CurrentVersion\Run\EstatellMyKadBridge`, every user at login. The binary is `WinExe`, so no console window opens |
+| Install to   | `C:\Program Files\Estatell MyKad Reader\`                                |
+| Shown as     | **Estatell MyKad Reader** in Settings → Apps, publisher Jesselton Pixel Sdn Bhd. The Apps list links to the set-up help page |
+| Start        | `HKLM\Software\Microsoft\Windows\CurrentVersion\Run\EstatellMyKadReader`, every user at login. The binary is `WinExe`, so no console window opens |
 | Tray         | Windows hides new tray icons under **^** at first. The user docs show how to find it   |
 | Admin prompt | Once                                                                                  |
-| Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs                                       |
+| Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs. MyKad Reader then starts at the next login, because the installer may run as SYSTEM |
 | Uninstall    | Settings → Apps → MyKad Reader                                                        |
+
+GitHub Actions builds `estatell-mykad-setup.exe` with `.github/workflows/windows-package.yml`, because Native AOT cannot build Windows on a Mac. Download it from the workflow run. It holds both the x64 and the arm64 binary.
 
 Why a Run key and not a Windows service: a service runs in session 0, where card readers are harder to reach and debug. The Run key runs in the user's session, where the reader works.
 
@@ -31,18 +41,18 @@ Why a Run key and not a Windows service: a service runs in session 0, where card
 
 | Item         | Value                                                                                       |
 | ------------ | ------------------------------------------------------------------------------------------- |
-| Install to   | `/Library/Application Support/Estatell/MyKadBridge/` (same as 1.x)                           |
-| App bundle   | `MyKad Reader.app` in the install folder, binary in `Contents/MacOS/mykad-bridge`. `Info.plist` sets `LSUIElement` (menu bar only, no Dock icon) |
-| Start        | `/Library/LaunchAgents/com.estatell.mykad-bridge.plist`, `RunAtLoad`, `KeepAlive` on crash, `LimitLoadToSessionType` `Aqua` (only in a desktop session, where the menu bar exists) |
+| Install to   | `/Library/Application Support/Estatell/MyKadReader/`                           |
+| App bundle   | `Estatell MyKad Reader.app` in the install folder, binary in `Contents/MacOS/mykad-reader`. `Info.plist` sets `LSUIElement` (menu bar only, no Dock icon) |
+| Start        | `/Library/LaunchAgents/com.estatell.mykad-reader.plist`, `RunAtLoad`, `KeepAlive` on crash, `LimitLoadToSessionType` `Aqua` (only in a desktop session, where the menu bar exists) |
 | Admin prompt | Mac password once                                                                           |
 | Binary       | Universal (arm64 and x64, joined with `lipo`)                                               |
-| Uninstall    | **Uninstall MyKad Reader.app** in `/Applications/Estatell/`. Asks for the Mac password once  |
+| Uninstall    | **Uninstall Estatell MyKad Reader.app** in `/Applications/Estatell/`. Asks for the Mac password once  |
 
 The 1.x `uninstall.sh` stays inside the install folder for support use. User docs never mention it.
 
 Build with `packaging/macos/build.sh [version]`. The result is `artifacts/macos/estatell-mykad.pkg`. The version defaults to the one in `Directory.Build.props`. An Apple Silicon Mac builds both architectures.
 
-- The package identifier stays `com.estatell.mykad-bridge`, so 2.0.0 upgrades the 1.x receipt.
+- The package identifier is `com.estatell.mykad-reader`. The pre-install script forgets the old `com.estatell.mykad-bridge` receipt.
 - Both app bundles are not relocatable. Otherwise macOS moves an upgrade to wherever it finds a copy with the same bundle id.
 - The bundles have an ad-hoc signature, because Apple Silicon runs only signed code. This is not a Developer ID signature, so the confirm step below still applies.
 - `packaging/THIRD-PARTY-NOTICES.txt` holds the `PCSC` licence and installs into the install folder.
@@ -50,7 +60,8 @@ Build with `packaging/macos/build.sh [version]`. The result is `artifacts/macos/
 ## Upgrade
 
 - Opening a newer installer stops the running copy, replaces it and starts the new one.
-- 2.0.0 replaces a 1.x Python bridge in place: same paths, same Run key and same LaunchAgent label.
+- 2.0.0 replaces a 1.x Python bridge. Windows keeps the 1.x AppId, so it upgrades the same entry in Settings → Apps.
+- The installers remove the old names: the `Estatell MyKad Bridge` folder and the `EstatellMyKadBridge` Run key on Windows, and the `MyKadBridge` folder, the `com.estatell.mykad-bridge` agent and the old uninstaller on macOS.
 - The installer removes the 1.x Python files it finds (`_internal\`, the PyInstaller folder).
 
 ## First run without code signing

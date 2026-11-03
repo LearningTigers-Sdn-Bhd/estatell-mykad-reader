@@ -8,13 +8,13 @@ public class InstanceGuardTests
 {
     [Fact]
     public void TheMacLockIsInTheUsersOwnFolder() =>
-        Assert.Equal("/Users/aina/Library/Application Support/Estatell/mykad-bridge.lock", InstanceGuard.ForMac("/Users/aina"));
+        Assert.Equal("/Users/aina/Library/Application Support/Estatell/mykad-reader.lock", InstanceGuard.ForMac("/Users/aina"));
 
     [Fact]
     public void OnlyTheFirstCopyOfAUserTakesTheLock()
     {
         using var directory = new TempDirectory();
-        var path = Path.Combine(directory.Path, "nested", "mykad-bridge.lock");
+        var path = Path.Combine(directory.Path, "nested", "mykad-reader.lock");
         using var first = new InstanceGuard(path, port: 1);
         using var second = new InstanceGuard(path, port: 1);
 
@@ -27,12 +27,28 @@ public class InstanceGuardTests
     public void TheLockIsFreeAgainWhenTheFirstCopyEnds()
     {
         using var directory = new TempDirectory();
-        var path = Path.Combine(directory.Path, "mykad-bridge.lock");
+        var path = Path.Combine(directory.Path, "mykad-reader.lock");
         var first = new InstanceGuard(path, port: 1);
         Assert.True(first.TryAcquire());
         first.Dispose();
 
         using var second = new InstanceGuard(path, port: 1);
+
+        Assert.True(second.TryAcquire());
+    }
+
+    [Fact]
+    public void OnlyTheFirstCopyTakesTheMutexUntilItEnds()
+    {
+        var name = $"EstatellMyKadTest{Guid.NewGuid():N}";
+        var first = new InstanceGuard(lockPath: null, port: 1, name);
+        using var second = new InstanceGuard(lockPath: null, port: 1, name);
+
+        Assert.True(first.TryAcquire());
+        Assert.True(first.TryAcquire());
+        Assert.False(second.TryAcquire());
+
+        first.Dispose();
 
         Assert.True(second.TryAcquire());
     }

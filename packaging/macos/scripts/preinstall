@@ -1,11 +1,18 @@
 #!/bin/bash
-# Stop a running copy so the new files can replace it, and remove the 1.x Python files.
-LABEL=com.estatell.mykad-bridge
-SUPPORT="/Library/Application Support/Estatell/MyKadBridge"
+# Stop a running copy so the new files can replace it, and remove what older versions left: the
+# 1.x Python files and the old names (agent, folder, uninstaller, package receipt).
+LABEL=com.estatell.mykad-reader
+OLD_LABEL=com.estatell.mykad-bridge
+OLD_SUPPORT="/Library/Application Support/Estatell/MyKadBridge"
 for uid in $(ps -axo uid=,comm= | awk '/loginwindow/ {print $1}' | sort -u); do
     launchctl bootout "gui/$uid/$LABEL" 2>/dev/null || true
+    launchctl bootout "gui/$uid/$OLD_LABEL" 2>/dev/null || true
 done
+pkill -f "Estatell/MyKadReader/Estatell MyKad Reader.app/Contents/MacOS/mykad-reader" 2>/dev/null || true
 pkill -f "Estatell/MyKadBridge/MyKad Reader.app/Contents/MacOS/mykad-bridge" 2>/dev/null || true
 pkill -f "Estatell/MyKadBridge/estatell-mykad-bridge" 2>/dev/null || true
-rm -rf "$SUPPORT/_internal" "$SUPPORT/estatell-mykad-bridge"
+rm -f "/Library/LaunchAgents/$OLD_LABEL.plist"
+rm -rf "$OLD_SUPPORT"
+rm -rf "/Applications/Estatell/Uninstall MyKad Reader.app"
+pkgutil --forget "$OLD_LABEL" >/dev/null 2>&1 || true
 exit 0

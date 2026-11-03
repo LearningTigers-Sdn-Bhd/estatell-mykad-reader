@@ -1,6 +1,6 @@
 #!/bin/bash
-# Start MyKad Reader now for every logged-in user. launchd starts it at each later login.
-LABEL=com.estatell.mykad-bridge
+# Start Estatell MyKad Reader now for every logged-in user. launchd starts it at each later login.
+LABEL=com.estatell.mykad-reader
 PLIST=/Library/LaunchAgents/$LABEL.plist
 chown root:wheel "$PLIST"
 chmod 644 "$PLIST"

@@ -9,7 +9,13 @@ public class LogTests
 {
     [Fact]
     public void TheMacPathIsTheOneX1Used() =>
-        Assert.Equal("/Users/aina/Library/Logs/estatell-mykad-bridge.log", LogFileOptions.ForMac("/Users/aina"));
+        Assert.Equal("/Users/aina/Library/Logs/estatell-mykad-reader.log", LogFileOptions.ForMac("/Users/aina"));
+
+    [Fact]
+    public void TheWindowsPathIsInTheEstatellFolder() =>
+        Assert.Equal(
+            Path.Combine("local-app-data", "Estatell", "estatell-mykad-reader.log"),
+            LogFileOptions.ForWindows("local-app-data"));
 
     [Fact]
     public async Task RotatesAtTheSizeAndKeepsTwoOldFiles()

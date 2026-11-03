@@ -1,0 +1,69 @@
+# Builds estatell-mykad-setup.exe with the real app and uploads it to the workflow run, so it can be installed
+# by hand on a PC. Native AOT cannot build Windows on a Mac. Nothing is published as a release.
+name: windows-package
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - src/**
+      - Directory.Build.props
+      - Directory.Packages.props
+      - packaging/windows/**
+      - packaging/THIRD-PARTY-NOTICES.txt
+      - .github/workflows/windows-package.yml
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          foreach ($rid in @('win-x64', 'win-arm64')) {
+            dotnet publish src/Estatell.MyKad.Bridge -c Release -r $rid -o artifacts/windows/$rid
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $process = Start-Process artifacts/windows/win-x64/mykad-reader.exe -ArgumentList '--no-tray' -PassThru
+          Start-Sleep -Seconds 5
+          $status = Invoke-RestMethod http://127.0.0.1:9292/status -TimeoutSec 5
+          "version $($status.version)"
+          (Get-Item artifacts/windows/win-x64/mykad-reader.exe).VersionInfo | Format-List ProductName, FileDescription, CompanyName, LegalCopyright, ProductVersion
+          try {
+            Invoke-WebRequest http://127.0.0.1:9292/status -Headers @{ Origin = 'https://evil.example' } -TimeoutSec 5 | Out-Null
+            throw 'A foreign Origin was not refused.'
+          } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+            if ($_.Exception.Response.StatusCode -ne 403) { throw }
+          }
+          Stop-Process -Id $process.Id -Force
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = dotnet msbuild src/Estatell.MyKad.Bridge -getProperty:Version
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+          }
+          & $iscc "/DAppVersion=$version" packaging\windows\installer.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Get-Item artifacts/windows/estatell-mykad-setup.exe).VersionInfo | Format-List ProductName, FileDescription, CompanyName, LegalCopyright
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: estatell-mykad-setup
+          path: artifacts/windows/estatell-mykad-setup.exe
+          if-no-files-found: error

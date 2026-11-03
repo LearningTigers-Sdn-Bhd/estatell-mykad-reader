@@ -35,8 +35,8 @@ The M0 spike (`spikes/PcscAot/`, run on 30 Oct 2026):
 | AOT publish           | Yes. 2.0 MB                                                | Yes. x64 2.0 MB, arm64 2.0 MB, x86 1.7 MB |
 | AOT and trim warnings | One: `IL2075` in `SCardHelper.GetAttrDesc`                 | Same, on all three                     |
 | Starts and reaches the smart-card service | Yes                                    | x64 and x86 on the CI runner: `SCARD_E_NO_SERVICE`, as expected with no reader. arm64 not run |
-| Reads a MyKad         | Yes, also on a freshly inserted card                       | Pending: a real x64 Windows PC         |
-| Full read             | 4.64 to 4.72 s over 4 runs                                 | Pending                                |
+| Reads a MyKad         | Yes, also on a freshly inserted card                       | Yes, with the installed 2.0.0 app on a real PC, 3 Nov 2026 |
+| Full read             | 4.64 to 4.72 s over 4 runs                                 | Not timed                              |
 
 - Windows results come from the `spike-pcsc-aot` workflow on `windows-latest`. Download the `.exe` from its run to try a read on a Windows PC.
 - `IL2075` is safe to suppress. The method only turns an error code into text, and it falls back to "Error code: …" when the description is trimmed away.

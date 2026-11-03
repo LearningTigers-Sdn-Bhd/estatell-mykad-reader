@@ -66,22 +66,21 @@ A refused origin gets `403` with `code: forbidden` and no CORS headers.
 
 | OS      | Path                                                     |
 | ------- | -------------------------------------------------------- |
-| Windows | `%LOCALAPPDATA%\Estatell\estatell-mykad-bridge.log`      |
-| macOS   | `~/Library/Logs/estatell-mykad-bridge.log`               |
+| Windows | `%LOCALAPPDATA%\Estatell\estatell-mykad-reader.log`      |
+| macOS   | `~/Library/Logs/estatell-mykad-reader.log`               |
 
-- Same paths as 1.x.
+- 1.x used `estatell-mykad-bridge.log` in the same folders. An upgrade leaves that old file in place.
 - 1 MB per file, plus 2 old files.
 - Holds requests (method, path, status, origin), errors and card steps. Never card data.
 - A request line has no query string, no body and no header except `Origin`. Control characters in the path or origin are replaced by `?`, so a caller cannot forge a line.
 - A successful `/status` poll (every 2.5 seconds) is logged only with `--verbose`. Every other request is logged.
 - An exception is logged as its type and message, without the stack.
-- macOS writes the file today. The Windows path comes with the Windows item.
 
 ## Single instance
 
 - On Windows the socket uses `SO_EXCLUSIVEADDRUSE`, so two copies cannot share the port.
 - A second copy for the same user exits with code 0. launchd does not restart a clean exit.
-- macOS holds an exclusive lock on `~/Library/Application Support/Estatell/mykad-bridge.lock`. The system drops the lock when the process ends, so a crash leaves no stale lock. If the lock file cannot be created, the copy starts without a lock.
+- macOS holds an exclusive lock on `~/Library/Application Support/Estatell/mykad-reader.lock`. The system drops the lock when the process ends, so a crash leaves no stale lock. If the lock file cannot be created, the copy starts without a lock.
 - Before it serves, a copy checks that the port is free. If not, it logs a warning and checks every 30 seconds. It cannot be stopped during that wait until the tray item adds the signal handling.
-- The Windows lock (a `Local\` mutex) and `SO_EXCLUSIVEADDRUSE` come with the Windows item.
+- Windows uses a `Local\` mutex instead of the lock file. The handle closes when the process ends, so a crash leaves no stale lock.
 - A copy for another user keeps its tray and waits for the port. See [More than one user](04-tray.md#more-than-one-user).
