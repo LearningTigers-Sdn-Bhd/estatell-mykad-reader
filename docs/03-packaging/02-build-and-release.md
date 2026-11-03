@@ -45,12 +45,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 | `estatell-mykad-reader-v2.0.0_intel.pkg` | Mac, Intel |
 
 - GitHub shows the SHA-256 of each file on the release page.
-- Estatell and the user docs link to the two universal files at an exact version, so staff never choose a chip. Update both with each release that hotels should download:
-
-```
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/download/v2.0.0/estatell-mykad-reader-setup-v2.0.0.exe
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/download/v2.0.0/estatell-mykad-reader-v2.0.0.pkg
-```
+- Estatell and the user docs link to `app.estatell.com/downloads/mykad-reader/windows` and `/mac`. These redirect to the universal file of the version in Estatell's `MYKAD_READER_VERSION`, so staff never choose a chip. For a new release that hotels should download, tag it here, then change that value and restart Estatell.
 
 - The repo is public (`LearningTigers-Sdn-Bhd/estatell-mykad-reader`), so hotel admins download without a GitHub login, and Actions minutes are free.
 
