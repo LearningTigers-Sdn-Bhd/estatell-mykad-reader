@@ -3,9 +3,9 @@ namespace Estatell.MyKad.Bridge;
 /// <summary>Where the log file is. A null <see cref="Path"/> means no file log.</summary>
 internal sealed record LogFileOptions(string? Path)
 {
-    public const string FileName = "estatell-mykad-bridge.log";
+    public const string FileName = "estatell-mykad-reader.log";
 
-    /// <summary>The 1.x path. Other systems get no file log.</summary>
+    /// <summary>The user's own log folder. Other systems get no file log.</summary>
     public static string? Default()
     {
         if (OperatingSystem.IsMacOS())

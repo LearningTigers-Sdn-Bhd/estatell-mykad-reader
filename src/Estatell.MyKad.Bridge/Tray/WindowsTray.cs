@@ -14,7 +14,7 @@ namespace Estatell.MyKad.Bridge.Tray;
 internal sealed unsafe class WindowsTray : ITray
 {
     private const string ClassName = "EstatellMyKadTray";
-    private const string Tip = "MyKad Reader";
+    private const string Tip = "Estatell MyKad Reader";
     private const uint TrayMessage = WmApp + 1;
     private const int HelpId = 1;
     private const int RestartId = 2;

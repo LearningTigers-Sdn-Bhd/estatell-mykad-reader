@@ -28,9 +28,9 @@ internal sealed class InstanceGuard(string? lockPath, int port, string? mutexNam
         OperatingSystem.IsMacOS() ? ForMac(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)) : null;
 
     /// <summary><c>Local\</c> is one per logged-in session, so one user's copy never blocks another's.</summary>
-    public static string? DefaultMutexName() => OperatingSystem.IsWindows() ? @"Local\EstatellMyKadBridge" : null;
+    public static string? DefaultMutexName() => OperatingSystem.IsWindows() ? @"Local\EstatellMyKadReader" : null;
 
-    public static string ForMac(string home) => Path.Combine(home, "Library", "Application Support", "Estatell", "mykad-bridge.lock");
+    public static string ForMac(string home) => Path.Combine(home, "Library", "Application Support", "Estatell", "mykad-reader.lock");
 
     public bool TryAcquire()
     {

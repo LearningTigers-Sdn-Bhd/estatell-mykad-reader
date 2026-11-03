@@ -25,7 +25,7 @@ global.json                    SDK pin, Microsoft Testing Platform runner
 Directory.Build.props          net10.0, version, nullable, warnings as errors
 Directory.Packages.props       all NuGet versions
 src/Estatell.MyKad/            card reading, IsAotCompatible
-src/Estatell.MyKad.Bridge/     the local server, PublishAot, binary mykad-bridge
+src/Estatell.MyKad.Bridge/     the local server, PublishAot, binary mykad-reader
 tests/Estatell.MyKad.Tests/
 tests/Estatell.MyKad.Bridge.Tests/
 ```

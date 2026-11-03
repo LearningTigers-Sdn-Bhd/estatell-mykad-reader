@@ -46,7 +46,7 @@ public class TrayMenuTextTests
     [Fact]
     public void ItemWords()
     {
-        Assert.Equal($"MyKad Reader {BridgeInfo.Version}", TrayMenuText.Header);
+        Assert.Equal($"Estatell MyKad Reader {BridgeInfo.Version}", TrayMenuText.Header);
         Assert.Equal("Set-up help", TrayMenuText.Help);
         Assert.Equal("Restart MyKad Reader", TrayMenuText.Restart);
     }

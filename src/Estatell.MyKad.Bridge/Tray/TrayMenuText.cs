@@ -9,7 +9,7 @@ internal static class TrayMenuText
 
     public const string Restart = "Restart MyKad Reader";
 
-    public static string Header => $"MyKad Reader {BridgeInfo.Version}";
+    public static string Header => $"Estatell MyKad Reader {BridgeInfo.Version}";
 
     /// <summary>The one line that says what to do next. A card in the reader only counts when the reader is ready.</summary>
     public static string MainLine(TrayStatus status) => $"{(status.State == TrayState.Ready ? "🟢" : "⚪")} {MainWords(status)}";

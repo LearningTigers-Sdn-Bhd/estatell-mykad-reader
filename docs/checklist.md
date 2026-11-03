@@ -14,6 +14,8 @@ The build plan as a list of commits, in build order. Any agent (Claude Code, Cod
 
 Legend: **Needs** lists items that must be done first. Scopes: `card`, `bridge`, `tray`, `packaging`, `ci`, `docs`.
 
+Plan change, 3 Nov 2026: the app is **Estatell MyKad Reader** by Jesselton Pixel Sdn Bhd, and the paths and IDs no longer match 1.x. Items below that were done earlier keep their old names.
+
 Plan change, 1 Nov 2026: pairing, the token and the Estatell settings page are dropped. The tray stays and shows the reader, the card and whether an Estatell page is talking to MyKad Reader. See [Why no token](02-bridge/02-security.md#why-no-token).
 
 ## Now
@@ -62,6 +64,7 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 
 - [x] `feat(packaging): build the Windows installer` — `installer.iss`: install path, **MyKad Reader** display name, Run key, silent switches, stop and replace an older copy, remove 1.x Python files. Needs: read the card, show the status in the Windows tray. Docs: [Windows](03-packaging/01-installers.md#windows).
 - [x] `feat(packaging): build the macOS package` — universal binary with `lipo`, `MyKad Reader.app` with `LSUIElement`, `pkgbuild` and `productbuild`, the LaunchAgent with `LimitLoadToSessionType` `Aqua`, pre- and post-install scripts, **Uninstall MyKad Reader.app**. Needs: read the card, show the status in the macOS menu bar. Docs: [macOS](03-packaging/01-installers.md#macos).
+- [x] `feat(packaging): set the app name and publisher` — **Estatell MyKad Reader** by Jesselton Pixel Sdn Bhd, `mykad-reader` as the program file, new folders, Run key and macOS IDs, program details, an app icon and a support link. The installers remove the old names. Docs: [Installers](03-packaging/01-installers.md#files).
 - [ ] `ci: build, smoke test and release on tags` — `release.yml` with the Windows and macOS jobs, the smoke tests, the version from the tag, GitHub Release on `v*` in this public repo. Needs: both installers. Docs: [Build and release](03-packaging/02-build-and-release.md).
 - [ ] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader` with the download links, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt and tray screenshots, the S8 exception, a link from onboarding. Needs: show the status in the macOS menu bar and the Windows tray. Docs: [User docs](04-estatell/03-user-docs.md).
 - [ ] `chore: release 2.0.0` — run the [clean computer checks](03-packaging/01-installers.md#checks-on-a-clean-computer) on an x64 Windows 10 PC and a Mac on macOS 15, then tag `v2.0.0`. Needs: CI, the Estatell items, the user docs.

@@ -5,9 +5,13 @@
     <key>CFBundleIdentifier</key>
     <string>com.estatell.mykad-reader</string>
     <key>CFBundleName</key>
-    <string>MyKad Reader</string>
+    <string>Estatell MyKad Reader</string>
     <key>CFBundleExecutable</key>
-    <string>mykad-bridge</string>
+    <string>mykad-reader</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © Jesselton Pixel Sdn Bhd</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

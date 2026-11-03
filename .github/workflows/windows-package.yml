@@ -35,10 +35,11 @@ jobs:
       - name: Smoke test
         shell: pwsh
         run: |
-          $process = Start-Process artifacts/windows/win-x64/mykad-bridge.exe -ArgumentList '--no-tray' -PassThru
+          $process = Start-Process artifacts/windows/win-x64/mykad-reader.exe -ArgumentList '--no-tray' -PassThru
           Start-Sleep -Seconds 5
           $status = Invoke-RestMethod http://127.0.0.1:9292/status -TimeoutSec 5
           "version $($status.version)"
+          (Get-Item artifacts/windows/win-x64/mykad-reader.exe).VersionInfo | Format-List ProductName, FileDescription, CompanyName, LegalCopyright, ProductVersion
           try {
             Invoke-WebRequest http://127.0.0.1:9292/status -Headers @{ Origin = 'https://evil.example' } -TimeoutSec 5 | Out-Null
             throw 'A foreign Origin was not refused.'
@@ -57,6 +58,7 @@ jobs:
           }
           & $iscc "/DAppVersion=$version" packaging\windows\installer.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Get-Item artifacts/windows/estatell-mykad-setup.exe).VersionInfo | Format-List ProductName, FileDescription, CompanyName, LegalCopyright
 
       - uses: actions/upload-artifact@v7
         with:
