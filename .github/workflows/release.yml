@@ -1,0 +1,179 @@
+# Builds and smoke tests both installers. A pull request uploads them to the workflow run, so they can be installed
+# by hand. A v* tag also publishes them as a GitHub Release. Native AOT cannot build for another OS.
+name: release
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - Directory.Build.props
+      - Directory.Packages.props
+      - global.json
+      - packaging/**
+      - .github/workflows/release.yml
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Take the version from the tag
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="$(dotnet msbuild src/Estatell.MyKad.Bridge -getProperty:Version)"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          foreach ($rid in @('win-x64', 'win-arm64')) {
+            dotnet publish src/Estatell.MyKad.Bridge -c Release -r $rid -p:Version=$env:VERSION -o artifacts/windows/$rid
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Smoke test x64
+        shell: bash
+        run: bash packaging/smoke-test.sh artifacts/windows/win-x64/mykad-reader.exe "$VERSION"
+
+      - name: Build installers
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+          }
+          foreach ($arch in @('', 'x64', 'arm64')) {
+            & $iscc "/DAppVersion=$env:VERSION" "/DArch=$arch" packaging\windows\installer.iss
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-installers
+          path: artifacts/windows/*.exe
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mykad-reader-win-arm64
+          path: artifacts/windows/win-arm64/mykad-reader.exe
+          if-no-files-found: error
+
+  windows-arm64:
+    needs: [version, windows]
+    runs-on: windows-11-arm
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: mykad-reader-win-arm64
+          path: app
+
+      - name: Smoke test arm64
+        shell: bash
+        run: bash packaging/smoke-test.sh app/mykad-reader.exe "$VERSION"
+
+  macos:
+    needs: version
+    runs-on: macos-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      APP: artifacts/macos/work/universal/pkgroot/Library/Application Support/Estatell/MyKadReader/Estatell MyKad Reader.app/Contents/MacOS/mykad-reader
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build packages
+        run: bash packaging/macos/build.sh "$VERSION"
+
+      - name: Smoke test arm64
+        run: bash packaging/smoke-test.sh "$APP" "$VERSION"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macos-packages
+          path: artifacts/macos/*.pkg
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mykad-reader-macos
+          path: ${{ env.APP }}
+          if-no-files-found: error
+
+  macos-x64:
+    needs: [version, macos]
+    runs-on: macos-15-intel
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: mykad-reader-macos
+          path: app
+
+      - name: Smoke test x64
+        run: |
+          chmod +x app/mykad-reader
+          bash packaging/smoke-test.sh app/mykad-reader "$VERSION"
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, windows-arm64, macos, macos-x64]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: windows-installers
+          path: release
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: macos-packages
+          path: release
+
+      - name: Publish the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/* \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes

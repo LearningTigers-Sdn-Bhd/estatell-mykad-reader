@@ -1,11 +1,24 @@
-; Builds estatell-mykad-setup.exe with Inno Setup 6.
-; Publish win-x64 and win-arm64 into artifacts\windows first, then:
-;   iscc /DAppVersion=2.0.0 packaging\windows\installer.iss
+; Builds estatell-mykad-reader-setup-v{version}{_x64 or _arm64}.exe with Inno Setup 6.
+; Publish win-x64 and win-arm64 into artifacts\windows first, then, with no Arch for the file that holds both:
+;   iscc /DAppVersion=2.0.0 [/DArch=x64|arm64] packaging\windows\installer.iss
 ; Installs per machine and starts Estatell MyKad Reader at every user's login (HKLM Run key).
 ; AppId stays the same as 1.x, so this upgrades 1.x. The old folder and Run key are removed below.
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"
+#endif
+#ifndef Arch
+  #define Arch ""
+#endif
+#if Arch == "x64"
+  #define Allowed "x64compatible"
+  #define Suffix "_x64"
+#elif Arch == "arm64"
+  #define Allowed "arm64"
+  #define Suffix "_arm64"
+#else
+  #define Allowed "x64compatible or arm64"
+  #define Suffix ""
 #endif
 
 [Setup]
@@ -28,10 +41,10 @@ DisableProgramGroupPage=yes
 DisableWelcomePage=yes
 DisableReadyPage=yes
 PrivilegesRequired=admin
-ArchitecturesAllowed=x64compatible or arm64
-ArchitecturesInstallIn64BitMode=x64compatible or arm64
+ArchitecturesAllowed={#Allowed}
+ArchitecturesInstallIn64BitMode={#Allowed}
 OutputDir=..\..\artifacts\windows
-OutputBaseFilename=estatell-mykad-setup
+OutputBaseFilename=estatell-mykad-reader-setup-v{#AppVersion}{#Suffix}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -40,8 +53,14 @@ UninstallDisplayIcon={app}\mykad-reader.exe
 CloseApplications=no
 
 [Files]
+#if Arch == "x64"
+Source: "..\..\artifacts\windows\win-x64\mykad-reader.exe"; DestDir: "{app}"; Flags: ignoreversion
+#elif Arch == "arm64"
+Source: "..\..\artifacts\windows\win-arm64\mykad-reader.exe"; DestDir: "{app}"; Flags: ignoreversion
+#else
 Source: "..\..\artifacts\windows\win-x64\mykad-reader.exe"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
 Source: "..\..\artifacts\windows\win-arm64\mykad-reader.exe"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
+#endif
 Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [InstallDelete]

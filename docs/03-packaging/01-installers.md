@@ -8,8 +8,8 @@ An admin opens one file once. MyKad Reader then starts at every login, for every
 
 | OS      | File                        | Built with                         |
 | ------- | --------------------------- | ---------------------------------- |
-| Windows | `estatell-mykad-setup.exe`  | Inno Setup 6, `packaging/windows/installer.iss` |
-| macOS   | `estatell-mykad.pkg`        | `pkgbuild`, `packaging/macos/`     |
+| Windows | `estatell-mykad-reader-setup-v{version}.exe`, also `_x64` and `_arm64` | Inno Setup 6, `packaging/windows/installer.iss` |
+| macOS   | `estatell-mykad-reader-v{version}.pkg`, also `_apple-silicon` and `_intel` | `pkgbuild`, `packaging/macos/`     |
 
 The setup file names stay the same as 1.x. Everything else uses the 2.0.0 names.
 
@@ -33,7 +33,7 @@ The source project stays `Estatell.MyKad.Bridge`, because users never see it. Th
 | Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs. MyKad Reader then starts at the next login, because the installer may run as SYSTEM |
 | Uninstall    | Settings → Apps → MyKad Reader                                                        |
 
-GitHub Actions builds `estatell-mykad-setup.exe` with `.github/workflows/windows-package.yml`, because Native AOT cannot build Windows on a Mac. Download it from the workflow run. It holds both the x64 and the arm64 binary.
+GitHub Actions builds the three installers with `.github/workflows/release.yml`, because Native AOT cannot build Windows on a Mac. Download them from the workflow run. The file with no chip in its name holds both the x64 and the arm64 binary.
 
 Why a Run key and not a Windows service: a service runs in session 0, where card readers are harder to reach and debug. The Run key runs in the user's session, where the reader works.
 
@@ -50,7 +50,7 @@ Why a Run key and not a Windows service: a service runs in session 0, where card
 
 The 1.x `uninstall.sh` stays inside the install folder for support use. User docs never mention it.
 
-Build with `packaging/macos/build.sh [version]`. The result is `artifacts/macos/estatell-mykad.pkg`. The version defaults to the one in `Directory.Build.props`. An Apple Silicon Mac builds both architectures.
+Build with `packaging/macos/build.sh [version]`. The result is three packages in `artifacts/macos`. The one with no chip in its name is universal. The version defaults to the one in `Directory.Build.props`. An Apple Silicon Mac builds both architectures.
 
 - The package identifier is `com.estatell.mykad-reader`. The pre-install script forgets the old `com.estatell.mykad-bridge` receipt.
 - Both app bundles are not relocatable. Otherwise macOS moves an upgrade to wherever it finds a copy with the same bundle id.
@@ -88,3 +88,5 @@ Run before each release, on a real x64 Windows 10 PC and a Mac on macOS 15:
 - [ ] With two users logged in, the second shows "MyKad Reader is open for another user".
 - [ ] Installs over 1.1.0 (Python) and over the previous 2.x.
 - [ ] Uninstall removes the app and the start entry.
+
+2.0.0: the user reported all checks passed on 3 Nov 2026.

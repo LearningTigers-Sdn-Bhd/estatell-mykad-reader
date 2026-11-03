@@ -17,7 +17,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 
 ## Smoke tests
 
-Each runner starts the built app with `--no-tray` and checks:
+`packaging/smoke-test.sh` starts the built app with `--no-tray` on `windows-latest` (x64), `windows-11-arm` (arm64), `macos-latest` (arm64) and `macos-15-intel` (x64). It checks:
 
 - `GET /status` returns `version` equal to the tag.
 - A foreign `Origin` gets `403`.
@@ -29,15 +29,27 @@ Each runner starts the built app with `--no-tray` and checks:
 
 | Trigger                    | What happens                                                    |
 | -------------------------- | --------------------------------------------------------------- |
-| Pull request               | Build and smoke tests. Nothing is published                     |
+| Pull request that changes the app or packaging | Build and smoke tests. The installers go to the workflow run. Nothing is published |
 | Tag `v*` (for example `v2.0.0`) | Build, smoke tests, then a GitHub Release with both installers |
 
-- The version comes from the tag. `Directory.Build.props` reads it, so the app, the installers and `/status` agree.
-- Estatell links never change:
+- The version comes from the tag and overrides `Directory.Build.props`, so the app, the installers and `/status` agree. A pull request uses the version in `Directory.Build.props`.
+- Each release has six files, with the version in the name:
+
+| File | Holds |
+| ---- | ----- |
+| `estatell-mykad-reader-setup-v2.0.0.exe` | Windows x64 and arm64 |
+| `estatell-mykad-reader-setup-v2.0.0_x64.exe` | Windows x64 |
+| `estatell-mykad-reader-setup-v2.0.0_arm64.exe` | Windows arm64 |
+| `estatell-mykad-reader-v2.0.0.pkg` | Mac, Apple Silicon and Intel |
+| `estatell-mykad-reader-v2.0.0_apple-silicon.pkg` | Mac, Apple Silicon |
+| `estatell-mykad-reader-v2.0.0_intel.pkg` | Mac, Intel |
+
+- GitHub shows the SHA-256 of each file on the release page.
+- Estatell and the user docs link to the two universal files at an exact version, so staff never choose a chip. Update both with each release that hotels should download:
 
 ```
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad-setup.exe
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad.pkg
+https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/download/v2.0.0/estatell-mykad-reader-setup-v2.0.0.exe
+https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/download/v2.0.0/estatell-mykad-reader-v2.0.0.pkg
 ```
 
 - The repo is public (`LearningTigers-Sdn-Bhd/estatell-mykad-reader`), so hotel admins download without a GitHub login, and Actions minutes are free.

@@ -88,7 +88,7 @@ The Run key and the LaunchAgent start a copy for each logged-in user. Only one c
 
 ## Spike
 
-The M1 spike (`spikes/TrayAot/`, run on 30 Oct 2026). One binary: Kestrel on a background thread, a tray icon with **Open status**, **Restart server** and **Quit spike**.
+The M1 spike (run on 30 Oct 2026, removed after the checks; `spikes/TrayAot/` at `cd2095b`). One binary: Kestrel on a background thread, a tray icon with **Open status**, **Restart server** and **Quit spike**.
 
 | Check                                | osx-arm64                                                  | win-x64 · win-arm64 · win-x86 |
 | ------------------------------------ | ---------------------------------------------------------- | ----------------------------- |
@@ -103,7 +103,7 @@ The M1 spike (`spikes/TrayAot/`, run on 30 Oct 2026). One binary: Kestrel on a b
 - The Windows spike ran on a real PC on 3 Nov 2026. The table's Windows results come from the installed 2.0.0 app on that PC. The antivirus result is not recorded. One browser blocked the download as dangerous until it was kept by hand.
 - `--self-test` sends the **Restart server** action and `menuWillOpen:` through AppKit, because the build machine allows no scripted clicks. Clicking the icon by hand is still a check to do.
 - The SIGTERM problem in [Signals](#signals) came from this spike.
-- Icons come from `spikes/TrayAot/icons/card.svg` with `make-icons.sh`. They are placeholders until there is a real logo.
+- Icons come from `src/Estatell.MyKad.Bridge/Tray/Icons/card.svg` with `make-ico.sh`. They are placeholders until there is a real logo.
 
 ## Tests and CI
 
