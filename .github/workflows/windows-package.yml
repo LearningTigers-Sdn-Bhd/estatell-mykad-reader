@@ -7,6 +7,8 @@ on:
   push:
     paths:
       - src/**
+      - Directory.Build.props
+      - Directory.Packages.props
       - packaging/windows/**
       - packaging/THIRD-PARTY-NOTICES.txt
       - .github/workflows/windows-package.yml
