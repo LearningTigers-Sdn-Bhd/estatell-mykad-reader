@@ -82,6 +82,14 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 
 - [ ] `feat(pairing): connect a computer to one hotel` — only if a hotel needs to know which computers have a reader or to cut one off. The dropped design is in git history (`e23270e`, `docs/02-bridge/03-connecting.md`).
 
+### M5: move to estatell.com
+
+Estatell serves its landing page and app from one Laravel app, so it can drop `app.estatell.com`. Installed readers must allow the new domain first.
+
+- [ ] `feat(bridge): allow estatell.com as an origin` — add it to the built-in list, keep `app.estatell.com` and `demo.estatell.com`, version 2.0.1. Docs: [Allowed origins](02-bridge/02-security.md#allowed-origins).
+- [ ] `chore: release 2.0.1` — install and read a card on one Windows PC and one Mac, tag `v2.0.1`, then set `MYKAD_READER_VERSION=2.0.1` in Estatell. Needs: allow estatell.com.
+- [ ] **estatell** `chore(guests): require MyKad Reader 2.0.1` — bump `REQUIRED_BRIDGE_VERSION` before the move, with time for every hotel to update. Needs: release 2.0.1.
+
 ## Done
 
 ### Commits

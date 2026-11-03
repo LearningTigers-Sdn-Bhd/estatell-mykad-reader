@@ -24,7 +24,7 @@ public class StatusTests
             ["online", "version", "reader_connected", "reader_name", "card_present"],
             root.EnumerateObject().Select(p => p.Name));
         Assert.True(root.GetProperty("online").GetBoolean());
-        Assert.Equal("2.0.0", root.GetProperty("version").GetString());
+        Assert.Equal("2.0.1", root.GetProperty("version").GetString());
         Assert.True(root.GetProperty("reader_connected").GetBoolean());
         Assert.Equal("ACS ACR39U ICC Reader", root.GetProperty("reader_name").GetString());
         Assert.True(root.GetProperty("card_present").GetBoolean());

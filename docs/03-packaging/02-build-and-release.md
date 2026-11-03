@@ -20,6 +20,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 `packaging/smoke-test.sh` starts the built app with `--no-tray` on `windows-latest` (x64), `windows-11-arm` (arm64), `macos-latest` (arm64) and `macos-15-intel` (x64). It checks:
 
 - `GET /status` returns `version` equal to the tag.
+- `https://estatell.com` as `Origin` gets `200`.
 - A foreign `Origin` gets `403`.
 - A wrong `Host` gets `403`.
 - `/read` with no `Origin` gets `403`.

@@ -9,7 +9,7 @@ internal sealed class OriginPolicy
 {
     public const string EnvironmentVariable = "ESTATELL_BRIDGE_ORIGINS";
 
-    private static readonly string[] _estatell = ["https://app.estatell.com", "https://demo.estatell.com"];
+    private static readonly string[] _estatell = ["https://estatell.com", "https://app.estatell.com", "https://demo.estatell.com"];
 
     private readonly HashSet<string> _exact = new(StringComparer.OrdinalIgnoreCase);
     private readonly bool _allowDevelopmentHosts;
