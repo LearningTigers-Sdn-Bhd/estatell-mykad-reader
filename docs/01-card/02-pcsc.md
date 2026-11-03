@@ -28,7 +28,7 @@ ReaderException.Code   NoReader | NoCard | Busy | Unavailable
 
 **Chosen: `PCSC` NuGet 7.0.1** (pcsc-sharp), BSD-2-Clause. Ship its copyright notice with the app. Own `[LibraryImport]` bindings stay the fallback if Windows shows a problem.
 
-The M0 spike (`spikes/PcscAot/`, run on 30 Oct 2026):
+The M0 spike (run on 30 Oct 2026, removed after the checks; `spikes/PcscAot/` at `cd2095b`):
 
 | Check                 | osx-arm64                                                  | win-x64 · win-arm64 · win-x86          |
 | --------------------- | ---------------------------------------------------------- | -------------------------------------- |
@@ -38,7 +38,7 @@ The M0 spike (`spikes/PcscAot/`, run on 30 Oct 2026):
 | Reads a MyKad         | Yes, also on a freshly inserted card                       | Yes, with the installed 2.0.0 app on a real PC, 3 Nov 2026 |
 | Full read             | 4.64 to 4.72 s over 4 runs                                 | Not timed                              |
 
-- Windows results come from the `spike-pcsc-aot` workflow on `windows-latest`. Download the `.exe` from its run to try a read on a Windows PC.
+- Windows build results came from the `spike-pcsc-aot` workflow on `windows-latest`, removed with the spike.
 - `IL2075` is safe to suppress. The method only turns an error code into text, and it falls back to "Error code: …" when the description is trimmed away.
 - The bridge suppresses `IL2104`, the one-line summary that the trimmer prints for `PCSC` because the package is not marked trimmable. Our own projects still warn in full. Check a new package with `-p:TrimmerSingleWarn=false`.
 - Connecting with `SCardProtocol.Any` to a freshly inserted card fails with `SCARD_W_UNRESPONSIVE_CARD` on macOS. `T0` works. See [Rules](#rules).
