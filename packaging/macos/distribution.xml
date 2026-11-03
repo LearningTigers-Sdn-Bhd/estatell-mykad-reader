@@ -3,7 +3,7 @@
     <title>Estatell MyKad Reader</title>
     <organization>com.estatell</organization>
     <domains enable_localSystem="true" enable_anywhere="false" enable_currentUserHome="false"/>
-    <options customize="never" require-scripts="false" hostArchitectures="arm64,x86_64"/>
+    <options customize="never" require-scripts="false" hostArchitectures="@ARCHITECTURES@"/>
     <volume-check>
         <allowed-os-versions>
             <os-version min="15.0"/>

@@ -33,12 +33,18 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 | Tag `v*` (for example `v2.0.0`) | Build, smoke tests, then a GitHub Release with both installers |
 
 - The version comes from the tag and overrides `Directory.Build.props`, so the app, the installers and `/status` agree. A pull request uses the version in `Directory.Build.props`.
-- Estatell links never change:
+- Each release has six files, with the version in the name:
 
-```
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad-setup.exe
-https://github.com/LearningTigers-Sdn-Bhd/estatell-mykad-reader/releases/latest/download/estatell-mykad.pkg
-```
+| File | Holds |
+| ---- | ----- |
+| `estatell-mykad-reader-setup-v2.0.0.exe` | Windows x64 and arm64 |
+| `estatell-mykad-reader-setup-v2.0.0_x64.exe` | Windows x64 |
+| `estatell-mykad-reader-setup-v2.0.0_arm64.exe` | Windows arm64 |
+| `estatell-mykad-reader-v2.0.0.pkg` | Mac, Apple Silicon and Intel |
+| `estatell-mykad-reader-v2.0.0_apple-silicon.pkg` | Mac, Apple Silicon |
+| `estatell-mykad-reader-v2.0.0_intel.pkg` | Mac, Intel |
+
+- GitHub shows the SHA-256 of each file on the release page.
 
 - The repo is public (`LearningTigers-Sdn-Bhd/estatell-mykad-reader`), so hotel admins download without a GitHub login, and Actions minutes are free.
 

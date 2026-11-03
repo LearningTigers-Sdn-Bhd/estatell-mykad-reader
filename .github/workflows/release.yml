@@ -64,20 +64,22 @@ jobs:
         shell: bash
         run: bash packaging/smoke-test.sh artifacts/windows/win-x64/mykad-reader.exe "$VERSION"
 
-      - name: Build installer
+      - name: Build installers
         shell: pwsh
         run: |
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) {
             choco install innosetup --no-progress -y
           }
-          & $iscc "/DAppVersion=$env:VERSION" packaging\windows\installer.iss
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($arch in @('', 'x64', 'arm64')) {
+            & $iscc "/DAppVersion=$env:VERSION" "/DArch=$arch" packaging\windows\installer.iss
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
 
       - uses: actions/upload-artifact@v7
         with:
-          name: estatell-mykad-setup
-          path: artifacts/windows/estatell-mykad-setup.exe
+          name: windows-installers
+          path: artifacts/windows/*.exe
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v7
@@ -108,7 +110,7 @@ jobs:
     runs-on: macos-latest
     env:
       VERSION: ${{ needs.version.outputs.version }}
-      APP: artifacts/macos/work/pkgroot/Library/Application Support/Estatell/MyKadReader/Estatell MyKad Reader.app/Contents/MacOS/mykad-reader
+      APP: artifacts/macos/work/universal/pkgroot/Library/Application Support/Estatell/MyKadReader/Estatell MyKad Reader.app/Contents/MacOS/mykad-reader
     steps:
       - uses: actions/checkout@v7
 
@@ -116,7 +118,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Build package
+      - name: Build packages
         run: bash packaging/macos/build.sh "$VERSION"
 
       - name: Smoke test arm64
@@ -124,8 +126,8 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: estatell-mykad-pkg
-          path: artifacts/macos/estatell-mykad.pkg
+          name: macos-packages
+          path: artifacts/macos/*.pkg
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v7
@@ -161,18 +163,17 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          name: estatell-mykad-setup
+          name: windows-installers
           path: release
 
       - uses: actions/download-artifact@v8
         with:
-          name: estatell-mykad-pkg
+          name: macos-packages
           path: release
 
       - name: Publish the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            release/estatell-mykad-setup.exe release/estatell-mykad.pkg \
+          gh release create "$GITHUB_REF_NAME" release/* \
             --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes
