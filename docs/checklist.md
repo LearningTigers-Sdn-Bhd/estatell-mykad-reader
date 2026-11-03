@@ -114,3 +114,6 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `b3b0fb7` | `feat(packaging): build the macOS package` |
 | `ba3e21a` | `feat(tray): show the status in the Windows tray` |
 | `2cea128` | `feat(packaging): build the Windows installer` |
+| `752193e` | `fix(tray): make the Windows menu lines readable` |
+| `88db2a6` | `feat(packaging): set the app name and publisher` |
+| `9b8665a` | `fix(packaging): set the publisher in the program details` |
