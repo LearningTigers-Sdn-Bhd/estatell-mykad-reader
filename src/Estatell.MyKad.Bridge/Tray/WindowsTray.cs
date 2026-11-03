@@ -162,11 +162,12 @@ internal sealed unsafe class WindowsTray : ITray
         RefreshIcon(status);
 
         var menu = CreatePopupMenu();
-        _ = AppendMenu(menu, MfString | MfDisabled, 0, TrayMenuText.Header);
-        _ = AppendMenu(menu, MfString | MfDisabled, 0, TrayMenuText.MainLine(status));
+        // The info lines have id 0, so a click only closes the menu. A disabled item would draw its text faint.
+        _ = AppendMenu(menu, MfString, 0, TrayMenuText.Header);
+        _ = AppendMenu(menu, MfString, 0, TrayMenuText.MainWords(status));
         _ = AppendMenu(menu, MfSeparator, 0, null);
-        _ = AppendMenu(menu, MfString | MfDisabled, 0, TrayMenuText.ReaderLine(status));
-        _ = AppendMenu(menu, MfString | MfDisabled, 0, TrayMenuText.EstatellLine(status));
+        _ = AppendMenu(menu, MfString, 0, TrayMenuText.ReaderLine(status));
+        _ = AppendMenu(menu, MfString, 0, TrayMenuText.EstatellLine(status));
         _ = AppendMenu(menu, MfSeparator, 0, null);
         _ = AppendMenu(menu, MfString, HelpId, TrayMenuText.Help);
         _ = AppendMenu(menu, MfString, RestartId, TrayMenuText.Restart);

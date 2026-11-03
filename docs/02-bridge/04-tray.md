@@ -47,7 +47,8 @@ Show staff that MyKad Reader is running, that the card reader is plugged in, and
 - Menu with `TrackPopupMenu`. Call `SetForegroundWindow` first, or the menu stays open when the user clicks elsewhere.
 - Calls use `LibraryImport`, so they work with Native AOT.
 - Icons are two embedded `.ico` files, normal and grey. Each has one colour that shows on both light and dark taskbars, so the icon does not change with the taskbar theme. A timer reads `Status` every 2 seconds to follow the reader, as on macOS.
-- The info lines use `MF_DISABLED` without `MF_GRAYED`, so they read as normal text and cannot be clicked.
+- The info lines are normal items with id 0, because a disabled item draws its text faint. They highlight on hover, and a click only closes the menu.
+- The main line has no 🟢 or ⚪ on Windows. Its menus draw an emoji without colour, so a green dot looks grey.
 - The binary is `WinExe`, so no console window opens at login. `--foreground` calls `AllocConsole` to print the log.
 
 ## macOS

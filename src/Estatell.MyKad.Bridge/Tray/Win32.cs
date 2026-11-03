@@ -21,7 +21,6 @@ internal static unsafe partial class Win32
     public const uint NifTip = 0x4;
 
     public const uint MfString = 0x0;
-    public const uint MfDisabled = 0x2;
     public const uint MfSeparator = 0x800;
     public const uint TpmRightButton = 0x2;
     public const uint TpmNoNotify = 0x80;

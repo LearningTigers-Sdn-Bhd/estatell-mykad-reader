@@ -14,6 +14,13 @@ public class TrayMenuTextTests
     }
 
     [Fact]
+    public void MainWordsHaveNoDot()
+    {
+        Assert.Equal("Ready. Insert a MyKad", TrayMenuText.MainWords(new TrayStatus(TrayState.Ready, "ACS ACR39U", false, null)));
+        Assert.Equal("Plug in the card reader", TrayMenuText.MainWords(TrayStatus.NoReader));
+    }
+
+    [Fact]
     public void ReaderLineShowsTheShortName()
     {
         Assert.Equal("Card reader: ACS ACR39U", TrayMenuText.ReaderLine(new TrayStatus(TrayState.Ready, "ACS ACR39U ICC Reader", false, null)));
