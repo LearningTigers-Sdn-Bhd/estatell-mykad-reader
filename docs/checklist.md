@@ -55,8 +55,8 @@ Docs: [HTTP API](02-bridge/01-http-api.md), [Security](02-bridge/02-security.md)
 
 Docs: [App changes](04-estatell/02-app-changes.md), [Check-in chip](04-estatell/01-check-in-chip.md).
 
-- [ ] **estatell** `docs(guests): plan MyKad Reader 2.0.0` — rewrite `docs/11-guests/05-mykad-reader.md` and add the items below to the Estatell checklist.
-- [ ] **estatell** `feat(guests): show MyKad Reader 2.0.0 status at check-in` — `useMykadReader` handles `code` (falls back to `error` for 1.x), `REQUIRED_BRIDGE_VERSION = '2.0.0'`; `MykadScanner` becomes the status chip with links to the user docs; `bridgeDownload()` points to GitHub Releases. No migration, route or permission. Needs: the Estatell docs item, read the card (this repo). Docs: [Check-in chip](04-estatell/01-check-in-chip.md).
+- [x] **estatell** `docs(guests): plan MyKad Reader 2.0.0` — rewrite `docs/11-guests/05-mykad-reader.md` and add the items below to the Estatell checklist.
+- [x] **estatell** `feat(guests): show MyKad Reader 2.0.0 status at check-in` — `useMykadReader` handles `code` (falls back to `error` for 1.x), `REQUIRED_BRIDGE_VERSION = '2.0.0'`; `MykadScanner` becomes the status chip with links to the user docs; `bridgeDownload()` points to GitHub Releases. No migration, route or permission. Needs: the Estatell docs item, read the card (this repo). Docs: [Check-in chip](04-estatell/01-check-in-chip.md).
 
 ### M3: ship
 
@@ -66,9 +66,9 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 - [x] `feat(packaging): build the macOS package` — universal binary with `lipo`, `MyKad Reader.app` with `LSUIElement`, `pkgbuild` and `productbuild`, the LaunchAgent with `LimitLoadToSessionType` `Aqua`, pre- and post-install scripts, **Uninstall MyKad Reader.app**. Needs: read the card, show the status in the macOS menu bar. Docs: [macOS](03-packaging/01-installers.md#macos).
 - [x] `feat(packaging): set the app name and publisher` — **Estatell MyKad Reader** by Jesselton Pixel Sdn Bhd, `mykad-reader` as the program file, new folders, Run key and macOS IDs, program details, an app icon and a support link. The installers remove the old names. Docs: [Installers](03-packaging/01-installers.md#files).
 - [x] `ci: build, smoke test and release on tags` — `release.yml` with the Windows and macOS jobs, the smoke tests, the version from the tag, GitHub Release on `v*` in this public repo. Needs: both installers. Docs: [Build and release](03-packaging/02-build-and-release.md). The build and smoke test jobs pass. The publish job first runs on the `v2.0.0` tag.
-- [ ] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader` with the download links, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt and tray screenshots, the S8 exception, a link from onboarding. Needs: show the status in the macOS menu bar and the Windows tray. Docs: [User docs](04-estatell/03-user-docs.md).
-- [ ] `chore: release 2.0.0` — run the [clean computer checks](03-packaging/01-installers.md#checks-on-a-clean-computer) on an x64 Windows 10 PC and a Mac on macOS 15, then tag `v2.0.0`. Needs: CI, the Estatell items, the user docs.
-- [ ] **estatell** `chore(guests): remove the Python MyKad bridge` — delete `tools/mykad-bridge/`, `mykad-bridge.yml` and the files in `public/downloads/`; remove the Python sections from the Estatell docs. Needs: release 2.0.0.
+- [x] **estatell-docs** `docs(guests): add MyKad Reader set-up and problems pages` — `set-up-mykad-reader` with the download links, rewritten `mykad-reader`, `mykad-reader-problems`, `meta.json`, the confirm prompt and tray screenshots, the S8 exception, a link from onboarding. Needs: show the status in the macOS menu bar and the Windows tray. Docs: [User docs](04-estatell/03-user-docs.md).
+- [x] `chore: release 2.0.0` — run the [clean computer checks](03-packaging/01-installers.md#checks-on-a-clean-computer) on an x64 Windows 10 PC and a Mac on macOS 15, then tag `v2.0.0`. Needs: CI, the Estatell items, the user docs.
+- [x] **estatell** `chore(guests): remove the Python MyKad bridge` — delete `tools/mykad-bridge/`, `mykad-bridge.yml` and the files in `public/downloads/`; remove the Python sections from the Estatell docs. Needs: release 2.0.0.
 
 ## Later
 
@@ -121,3 +121,5 @@ Docs: [Installers](03-packaging/01-installers.md), [Build and release](03-packag
 | `d17ac22` | `ci: build, smoke test and release on tags` |
 | `6733c71` | `feat(packaging): name release files by version and chip` |
 | `55b1392` | `docs(packaging): record the pinned download links` |
+| `19dedee` | `docs: tick CI and record the 2.0.0 clean computer checks` |
+| `8d5dac2` | `docs(packaging): record only what the check report covered` |

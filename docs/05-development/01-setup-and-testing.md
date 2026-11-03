@@ -77,7 +77,7 @@ MYKAD_HARDWARE=1 dotnet test --project tests/Estatell.MyKad.Tests
    MYKAD_HARDWARE=1 MYKAD_RECORD=~/mykad-raw dotnet test --project tests/Estatell.MyKad.Tests --filter-method "*RecordsTheJpnFiles"
    ```
 
-2. Clean the files and run the Python bridge's decoder on them. The script needs the `estatell` repo next to this one (or `--bridge <folder>`), but not pyscard.
+2. Clean the files and run the Python bridge's decoder on them. The bridge left Estatell after `670c6a01`, so pass that commit's `tools/mykad-bridge` with `--bridge <folder>`. The script does not need pyscard.
 
    ```
    python3 tools/parity/make_fixture.py ~/mykad-raw

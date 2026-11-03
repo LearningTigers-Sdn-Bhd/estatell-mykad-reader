@@ -7,7 +7,9 @@ Makes the parity fixture from the raw JPN files of a real card.
 2. Runs the Python bridge's own decoder on the cleaned files and saves its output.
 
 Usage:
-    python3 tools/parity/make_fixture.py <raw folder> [--bridge <mykad-bridge folder>] [--out <folder>]
+    python3 tools/parity/make_fixture.py <raw folder> --bridge <mykad-bridge folder> [--out <folder>]
+
+The Python bridge left Estatell after commit 670c6a01. Check out tools/mykad-bridge from that commit.
 
 The raw folder comes from the RecordsTheJpnFiles hardware test. Keep it outside the repo
 and delete it when done.
