@@ -33,7 +33,7 @@ The source project stays `Estatell.MyKad.Bridge`, because users never see it. Th
 | Silent       | `/VERYSILENT /SUPPRESSMSGBOXES` for IT roll-outs. MyKad Reader then starts at the next login, because the installer may run as SYSTEM |
 | Uninstall    | Settings → Apps → MyKad Reader                                                        |
 
-GitHub Actions builds `estatell-mykad-setup.exe` with `.github/workflows/windows-package.yml`, because Native AOT cannot build Windows on a Mac. Download it from the workflow run. It holds both the x64 and the arm64 binary.
+GitHub Actions builds `estatell-mykad-setup.exe` with `.github/workflows/release.yml`, because Native AOT cannot build Windows on a Mac. Download it from the workflow run. It holds both the x64 and the arm64 binary.
 
 Why a Run key and not a Windows service: a service runs in session 0, where card readers are harder to reach and debug. The Run key runs in the user's session, where the reader works.
 

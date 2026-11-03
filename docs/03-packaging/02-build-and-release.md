@@ -17,7 +17,7 @@ Native AOT cannot build for another OS, so each OS builds on its own runner.
 
 ## Smoke tests
 
-Each runner starts the built app with `--no-tray` and checks:
+`packaging/smoke-test.sh` starts the built app with `--no-tray` on `windows-latest` (x64), `windows-11-arm` (arm64), `macos-latest` (arm64) and `macos-15-intel` (x64). It checks:
 
 - `GET /status` returns `version` equal to the tag.
 - A foreign `Origin` gets `403`.
@@ -29,10 +29,10 @@ Each runner starts the built app with `--no-tray` and checks:
 
 | Trigger                    | What happens                                                    |
 | -------------------------- | --------------------------------------------------------------- |
-| Pull request               | Build and smoke tests. Nothing is published                     |
+| Pull request that changes the app or packaging | Build and smoke tests. The installers go to the workflow run. Nothing is published |
 | Tag `v*` (for example `v2.0.0`) | Build, smoke tests, then a GitHub Release with both installers |
 
-- The version comes from the tag. `Directory.Build.props` reads it, so the app, the installers and `/status` agree.
+- The version comes from the tag and overrides `Directory.Build.props`, so the app, the installers and `/status` agree. A pull request uses the version in `Directory.Build.props`.
 - Estatell links never change:
 
 ```
